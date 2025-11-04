@@ -1,0 +1,375 @@
+{% extends 'base.html' %}
+{% load static %} 
+
+{% block title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<div class="container page-container" data-aos="fade-up">
+
+    <h2 data-aos="fade-down">{{ form_title }}</h2>
+    
+    <form method="POST" enctype="multipart/form-data" class="management-form" data-aos="fade-up">
+        {% csrf_token %}
+        
+        <div class="dashboard-section">
+            <h3>1. Thông tin Dịch Vụ Chính</h3>
+            
+            {% if form.non_field_errors %} <div class="errorlist">{{ form.non_field_errors }}</div> {% endif %}
+
+             <div class="form-row">
+                <div class="form-group">
+                    {{ form.name.label_tag }}
+                    {{ form.name }}
+                    {% if form.name.errors %}<div class="errorlist">{{ form.name.errors }}</div>{% endif %}
+                </div>
+                 <div class="form-group">
+                    {{ form.category.label_tag }}
+                    <div class="category-select-wrapper">
+                        {{ form.category }}
+                        <button type="button" id="add-category-btn" class="btn btn-sm" title="Tạo Category mới">+</button>
+                        <button type="button" id="edit-category-btn" class="btn btn-sm btn-edit" title="Sửa Category đã chọn" style="display: none;">
+                            ✏️
+                        </button>
+                    </div>
+                    {% if form.category.errors %}<div class="errorlist">{{ form.category.errors }}</div>{% endif %}
+                </div>
+             </div>
+
+            <p> {{ form.description.label_tag }} {{ form.description }} {% if form.description.errors %}<div class="errorlist">{{ form.description.errors }}</div>{% endif %} </p>
+
+            <div class="form-row">
+                <div class="form-group"> {{ form.price.label_tag }} {{ form.price }} {% if form.price.errors %}<div class="errorlist">{{ form.price.errors }}</div>{% endif %} <p class="delete-checkbox" style="margin-top: 10px;"> {{ form.is_price_on_contact }} <label for="{{ form.is_price_on_contact.id_for_label }}"> {{ form.is_price_on_contact.label }} </label> </p> </div>
+                 
+                 <div class="form-group">
+                    {{ form.supplier.label_tag }}
+                    <div class="category-select-wrapper">
+                        {{ form.supplier }}
+                        <button type="button" id="add-supplier-btn" class="btn btn-sm" title="Tạo Nhà Cung Cấp mới">+</button>
+                        <button type="button" id="edit-supplier-btn" class="btn btn-sm btn-edit" title="Sửa Nhà Cung Cấp đã chọn" style="display: none;">
+                            ✏️
+                        </button>
+                    </div>
+                    {% if form.supplier.errors %}<div class="errorlist">{{ form.supplier.errors }}</div>{% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.thumbnail.label_tag }}
+                    {% if form.instance.thumbnail %}
+                    <p class="current-image" style="margin-top: 0;">
+                        Ảnh hiện tại: <br>
+                        <img src="{{ form.instance.thumbnail.url }}" alt="Thumbnail">
+                    </p>
+                    {% endif %}
+                    <input type="file" name="{{ form.thumbnail.name }}" id="{{ form.thumbnail.id_for_label }}">
+                    {% if form.instance.thumbnail %}
+                        <div class="delete-checkbox" style="margin-top: 5px;">
+                            <input type="checkbox" name="{{ form.thumbnail.name }}-clear" id="{{ form.thumbnail.id_for_label }}_clear">
+                            <label for="{{ form.thumbnail.id_for_label }}_clear">Xóa ảnh hiện tại</label>
+                        </div>
+                    {% endif %}
+                    {{ form.thumbnail.errors }}
+                </div>
+                 <div class="form-group"></div>
+            </div>
+        </div>
+
+        <div class="dashboard-section" data-aos="fade-up" data-aos-delay="100">
+            <h3>2. Chi tiết Dịch Vụ (Nội dung)</h3>
+            <p>Thêm hoặc sửa các mục chi tiết cho dịch vụ này.</p>
+            {{ formset.management_form }}
+            {% if formset.non_field_errors %} <div class="errorlist">{{ formset.non_field_errors }}</div> {% endif %}
+            <div id="detail-formset-container">
+                {% for detail_form in formset %}
+                    <div class="formset-item">
+                        {% for field in detail_form.hidden_fields %}{{ field }}{% endfor %}
+                        <p> {{ detail_form.title.label_tag }} {{ detail_form.title }} {% if detail_form.title.errors %}<div class="errorlist">{{ detail_form.title.errors }}</div>{% endif %} </p>
+                        <p> {{ detail_form.content.label_tag }} {{ detail_form.content }} {% if detail_form.content.errors %}<div class="errorlist">{{ detail_form.content.errors }}</div>{% endif %} </p>
+                        {% if detail_form.instance.pk and formset.can_delete %} <p class="delete-checkbox"> {{ detail_form.DELETE }} <label for="{{ detail_form.DELETE.id_for_label }}">Đánh dấu để Xóa mục chi tiết này</label> </p> {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="dashboard-section" data-aos="fade-up" data-aos-delay="200">
+            <h3>3. Thư viện Hình ảnh</h3>
+            <p>Tải lên nhiều hình ảnh cho dịch vụ này.</p>
+            {{ image_formset.management_form }}
+            {% if image_formset.non_field_errors %} <div class="errorlist">{{ image_formset.non_field_errors }}</div> {% endif %}
+            <div id="image-formset-container">
+                {% for img_form in image_formset %}
+                    <div class="formset-item">
+                        {% for field in img_form.hidden_fields %}{{ field }}{% endfor %}
+                        {% if img_form.instance.pk and img_form.instance.image %} <p class="current-image">Ảnh hiện tại: <img src="{{ img_form.instance.image.url }}" alt="preview"></p> {% endif %}
+                        <p> {{ img_form.image.label_tag }} {{ img_form.image }} {% if img_form.image.errors %}<div class="errorlist">{{ img_form.image.errors }}</div>{% endif %} </p>
+                        <p> {{ img_form.caption.label_tag }} {{ img_form.caption }} {% if img_form.caption.errors %}<div class="errorlist">{{ img_form.caption.errors }}</div>{% endif %} </p>
+                        {% if img_form.instance.pk and image_formset.can_delete %} <p class="delete-checkbox"> {{ img_form.DELETE }} <label for="{{ img_form.DELETE.id_for_label }}">Đánh dấu để Xóa ảnh này</label> </p> {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="form-actions" data-aos="fade-up" data-aos-delay="300">
+            <button type="submit" class="btn">Lưu Dịch Vụ</button>
+            <a href="{% url 'services:service_management_list' %}" class="btn" style="background-color: #6c757d;">Hủy bỏ</a>
+        </div>
+    </form>
+
+    <div id="category-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal-btn">&times;</span>
+            <h3 id="modal-title">Tạo Category Mới</h3>
+            <form id="category-modal-form">
+                {% csrf_token %}
+                <p>
+                    <label for="id_modal_category_name">Tên Category:</label>
+                    <input type="text" id="id_modal_category_name" name="name" required>
+                </p>
+                <p>
+                    <label for="id_modal_category_color">Màu sắc:</label>
+                    <input type="color" id="id_modal_category_color" name="color" value="#e4002b" required>
+                </p>
+                <div id="modal-error-message" class="errorlist" style="display: none;"></div>
+                <button type="submit" id="modal-submit-btn" class="btn">Lưu Category</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="supplier-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal-btn">&times;</span>
+            <h3 id="supplier-modal-title">Tạo Nhà Cung Cấp Mới</h3>
+            <form id="supplier-modal-form">
+                {% csrf_token %}
+                <p>
+                    <label for="id_modal_supplier_name">Tên Nhà Cung Cấp:</label>
+                    <input type="text" id="id_modal_supplier_name" name="name" required>
+                </p>
+                <div id="supplier-modal-error" class="errorlist" style="display: none;"></div>
+                <button type="submit" id="supplier-modal-submit-btn" class="btn">Lưu</button>
+            </form>
+        </div>
+    </div>
+    
+</div> {% endblock content %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // --- LOGIC ẨN/HIỆN GIÁ ---
+    (function() {
+        const contactCheck = document.getElementById('id_is_price_on_contact');
+        const priceInput = document.getElementById('id_price');
+        function togglePriceInput() {
+            if (!contactCheck || !priceInput) return;
+            const priceGroup = priceInput.closest('.form-group');
+            if (contactCheck.checked) {
+                priceInput.value = '';
+                priceInput.disabled = true;
+                 if(priceGroup) priceGroup.style.opacity = '0.5';
+            } else {
+                priceInput.disabled = false;
+                if(priceGroup) priceGroup.style.opacity = '1';
+            }
+        }
+        if(contactCheck && priceInput) {
+            togglePriceInput();
+            contactCheck.addEventListener('change', togglePriceInput);
+        }
+    })();
+
+    // --- HÀM HELPER CHO MODAL (TÁI SỬ DỤNG) ---
+    function setupModalLogic(options) {
+        const modal = document.getElementById(options.modalId);
+        const addBtn = document.getElementById(options.addBtnId);
+        const editBtn = document.getElementById(options.editBtnId);
+        
+        if (!modal || !addBtn || !editBtn) {
+            // console.warn(`Modal logic failed for ${options.modalId}: Elements missing.`);
+            return;
+        }
+
+        const closeModalBtn = modal.querySelector('.close-modal-btn');
+        const modalForm = document.getElementById(options.formId);
+        const modalTitle = document.getElementById(options.titleId);
+        const modalSubmitBtn = document.getElementById(options.submitBtnId);
+        const modalNameInput = document.getElementById(options.nameInputId);
+        const modalColorInput = document.getElementById(options.colorInputId); 
+        const modalError = document.getElementById(options.errorId);
+        const mainSelect = document.getElementById(options.selectId);
+        
+        if (!modalForm || !modalTitle || !modalSubmitBtn || !modalNameInput || !modalError || !mainSelect) {
+            // console.error(`Modal logic failed for ${options.modalId}: Form elements missing.`);
+            return;
+        }
+        
+        const csrfToken = modalForm.querySelector('input[name="csrfmiddlewaretoken"]').value;
+        let currentEditUrl = '';
+
+        function openModal(mode, entityId = null) {
+            modalForm.reset();
+            modalNameInput.value = '';
+            if (modalColorInput) modalColorInput.value = '#e4002b';
+            modalError.style.display = 'none';
+            modalError.textContent = '';
+            
+            if (mode === 'create') {
+                modalTitle.textContent = options.createTitle;
+                modalSubmitBtn.textContent = 'Lưu';
+                currentEditUrl = options.createUrl;
+                modal.style.display = 'block';
+                modalNameInput.focus();
+            } 
+            else if (mode === 'edit' && entityId) {
+                modalTitle.textContent = options.editTitle;
+                modalSubmitBtn.textContent = 'Cập nhật';
+                currentEditUrl = options.editUrlTemplate.replace('0', entityId);
+                
+                fetch(options.getUrlTemplate.replace('0', entityId))
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            modalNameInput.value = data.name;
+                            if (modalColorInput && data.color) {
+                                modalColorInput.value = data.color;
+                            }
+                            modal.style.display = 'block';
+                            modalNameInput.focus();
+                        } else {
+                            alert(options.errorLoad);
+                        }
+                    })
+                    .catch(err => {
+                        alert(options.errorNetwork);
+                        console.error(err);
+                    });
+            }
+        }
+
+        function toggleEditButton() {
+            if (mainSelect.value && mainSelect.value !== "") { 
+                editBtn.style.display = 'inline-block';
+            } else {
+                editBtn.style.display = 'none';
+            }
+        }
+        mainSelect.onchange = toggleEditButton;
+        toggleEditButton(); 
+
+        addBtn.onclick = function() { openModal('create'); };
+        editBtn.onclick = function() {
+            const selectedId = mainSelect.value;
+            if (selectedId) { openModal('edit', selectedId); }
+        };
+
+        closeModalBtn.onclick = function() { modal.style.display = 'none'; };
+        window.onclick = function(event) {
+            if (event.target == modal) { modal.style.display = 'none'; }
+        };
+
+        modalForm.onsubmit = function(e) {
+            e.preventDefault();
+            const entityName = modalNameInput.value.trim();
+            let bodyData = `name=${encodeURIComponent(entityName)}`;
+
+            if (modalColorInput) {
+                bodyData += `&color=${encodeURIComponent(modalColorInput.value)}`;
+            }
+
+            if (!entityName) {
+                modalError.textContent = options.errorEmpty;
+                modalError.style.display = 'block';
+                return;
+            }
+
+            fetch(currentEditUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: bodyData
+            })
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(({ status, body }) => {
+                if (body.success) {
+                    if (currentEditUrl.includes('ajax-create')) {
+                        const newOption = new Option(body.name, body.id, false, true);
+                        mainSelect.appendChild(newOption);
+                    } else {
+                        const selectedOption = mainSelect.querySelector(`option[value="${body.id}"]`);
+                        if (selectedOption) {
+                            selectedOption.textContent = body.name;
+                        }
+                    }
+                    modal.style.display = 'none';
+                    toggleEditButton();
+                } else {
+                    let errorMsg = 'Đã có lỗi xảy ra.';
+                    if (body.errors) {
+                         let errorsData = body.errors;
+                         if (typeof errorsData === 'string') { try { errorsData = JSON.parse(errorsData); } catch (e) { errorsData = {'__all__': [errorsData]}; } }
+                         const firstErrorKey = Object.keys(errorsData)[0];
+                         if(errorsData[firstErrorKey] && errorsData[firstErrorKey][0]) { errorMsg = errorsData[firstErrorKey][0].message || errorsData[firstErrorKey][0]; }
+                         else if (typeof errorsData[firstErrorKey] === 'string') { errorMsg = errorsData[firstErrorKey]; }
+                    }
+                    modalError.textContent = errorMsg;
+                    modalError.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                modalError.textContent = options.errorNetwork;
+                modalError.style.display = 'block';
+            });
+        };
+    } // Kết thúc hàm setupModalLogic
+
+    // --- CHẠY LOGIC CHO CATEGORY ---
+    setupModalLogic({
+        modalId: 'category-modal',
+        addBtnId: 'add-category-btn',
+        editBtnId: 'edit-category-btn',
+        formId: 'category-modal-form',
+        titleId: 'modal-title',
+        submitBtnId: 'modal-submit-btn',
+        nameInputId: 'id_modal_category_name',
+        colorInputId: 'id_modal_category_color',
+        errorId: 'modal-error-message',
+        selectId: 'id_category_select',
+        createTitle: 'Tạo Category Mới',
+        editTitle: 'Chỉnh sửa Category',
+        createUrl: "{% url 'services:ajax_create_category' %}",
+        editUrlTemplate: "/services/management/category/ajax-edit/0/",
+        getUrlTemplate: "/services/management/category/ajax-get/0/",
+        errorLoad: 'Lỗi: Không thể tải thông tin category.',
+        errorNetwork: 'Lỗi kết nối hoặc server (Category).',
+        errorEmpty: 'Vui lòng nhập tên category.'
+    });
+    
+    // --- CHẠY LOGIC CHO SUPPLIER ---
+    setupModalLogic({
+        modalId: 'supplier-modal',
+        addBtnId: 'add-supplier-btn',
+        editBtnId: 'edit-supplier-btn',
+        formId: 'supplier-modal-form',
+        titleId: 'supplier-modal-title',
+        submitBtnId: 'supplier-modal-submit-btn',
+        nameInputId: 'id_modal_supplier_name',
+        colorInputId: null, // <-- Không có màu
+        errorId: 'supplier-modal-error',
+        selectId: 'id_supplier_select',
+        createTitle: 'Tạo Nhà Cung Cấp Mới',
+        editTitle: 'Chỉnh sửa Nhà Cung Cấp',
+        createUrl: "{% url 'services:ajax_create_supplier' %}",
+        editUrlTemplate: "/services/management/supplier/ajax-edit/0/",
+        getUrlTemplate: "/services/management/supplier/ajax-get/0/",
+        errorLoad: 'Lỗi: Không thể tải thông tin nhà cung cấp.',
+        errorNetwork: 'Lỗi kết nối hoặc server (Supplier).',
+        errorEmpty: 'Vui lòng nhập tên nhà cung cấp.'
+    });
+
+});
+</script>
+{% endblock extra_js %}

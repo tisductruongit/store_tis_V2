@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quản lý Bài Đăng{% endblock %}
+
+{% block content %}
+<div class="container page-container" data-aos="fade-up">
+
+    <div style="display: flex; justify-content: space-between; align-items: center;" data-aos="fade-down">
+        <h2>Quản lý Bài Đăng Quảng Cáo</h2>
+        <a href="{% url 'post_management_create' %}" class="btn" style="background: #28a745;">Tạo Bài Đăng Mới</a>
+    </div>
+    
+    <p data-aos="fade-up" data-aos-delay="100">Đây là nơi bạn (Admin) thêm, sửa, hoặc xóa các bài quảng cáo hiển thị trên trang chủ.</p>
+
+    <div class="table-responsive" data-aos="fade-up" data-aos-delay="200">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: var(--dark-grey); color: var(--white);">
+                    <th style="padding: 10px; text-align: left;">Ảnh</th>
+                    <th style="padding: 10px; text-align: left;">Tiêu đề</th>
+                    <th style="padding: 10px; text-align: right;">Ngày tạo</th>
+                    <th style="padding: 10px; text-align: center;">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px;">
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" alt="Thumb" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
+                        {% else %}
+                            <span style="color: #aaa; font-style: italic;">--</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 10px;"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></td>
+                    <td style="padding: 10px; text-align: right;">{{ post.created_at|date:"d/m/Y" }}</td>
+                    <td style="padding: 10px; text-align: center;">
+                        <a href="{% url 'post_management_edit' post.pk %}" class="btn" style="padding: 5px 10px; font-size: 0.9rem; margin-right: 5px; background-color: #ffc107; color: #333;">Sửa</a>
+                        <a href="{% url 'post_management_delete' post.pk %}" class="btn" style="padding: 5px 10px; font-size: 0.9rem; background: #dc3545;">Xóa</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="padding: 15px; text-align: center;">Chưa có bài đăng nào.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <style> 
+        .table-responsive { overflow-x: auto; } 
+        @media (max-width: 768px) { 
+            .table-responsive table th, .table-responsive table td { white-space: nowrap; } 
+        } 
+    </style>
+    
+</div> {% endblock %}

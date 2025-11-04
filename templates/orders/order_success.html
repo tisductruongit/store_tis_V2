@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Đặt hàng Thành công{% endblock %}
+
+{% block content %}
+<div class="container page-container" data-aos="fade-up" style="text-align: center;">
+
+    <div style="font-size: 4rem; color: #28a745;" data-aos="zoom-in">
+        <i class="fas fa-check-circle"></i>
+    </div>
+    
+    <h2 data-aos="fade-up">Đặt hàng Thành công!</h2>
+    
+    <p data-aos="fade-up" data-aos-delay="100">
+        Yêu cầu của bạn đã được gửi. Hóa đơn đang ở trạng thái <strong>"Chờ xác nhận"</strong>.
+    </p>
+    <p data-aos="fade-up" data-aos-delay="200">
+        Admin sẽ duyệt và kích hoạt dịch vụ cho bạn trong thời gian sớm nhất.
+    </p>
+    <p data-aos="fade-up" data-aos-delay="300" style="margin-top: 30px;">
+        <a href="{% url 'dashboard' %}" class="btn" style="margin-right: 10px;">Xem Bảng điều khiển</a>
+        <a href="{% url 'service_list' %}" class="btn" style="background-color: #6c757d;">Tiếp tục Mua sắm</a>
+    </p>
+
+</div>
+{% endblock %}

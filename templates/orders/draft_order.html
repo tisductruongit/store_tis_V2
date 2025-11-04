@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Xác nhận Hóa đơn Nháp{% endblock %}
+
+{% block content %}
+<div class="container page-container" data-aos="fade-up">
+
+    <h2 data-aos="fade-down">Xác nhận Đơn hàng (Hóa đơn Nháp)</h2>
+    <p data-aos="fade-up">Vui lòng kiểm tra lại các dịch vụ bạn sắp mua. Đây là bước cuối cùng.</p>
+
+    <div class="table-responsive" data-aos="fade-up" data-aos-delay="100">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+                <tr style="background-color: var(--dark-grey); color: var(--white);">
+                    <th style="padding: 10px; text-align: left;">Dịch vụ</th>
+                    <th style="padding: 10px; text-align: right;">Thời hạn</th>
+                    <th style="padding: 10px; text-align: right;">Giá</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in draft_items %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px;">{{ item.service_name }}</td>
+                    <td style="padding: 10px; text-align: right;">{{ item.duration_days }} ngày</td>
+                    <td style="padding: 10px; text-align: right;">{{ item.price }} VND</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr style="border-top: 2px solid var(--dark-grey);">
+                    <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold; font-size: 1.2rem;">
+                        Tổng cộng
+                    </td>
+                    <td style="padding: 10px; text-align: right; font-weight: bold; font-size: 1.2rem; color: var(--primary-red);">
+                        {{ total_price }} VND
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="dashboard-section" data-aos="fade-up" data-aos-delay="200">
+        <h3>Thông tin Người mua (Sẽ dùng cho Hóa đơn)</h3>
+        <p><strong>Họ tên:</strong> {{ user.full_name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>SĐT:</strong> {{ user.phone_number }}</p>
+        <p><strong>Địa chỉ:</strong> {{ user.address }}</p>
+        <a href="{% url 'profile' %}" style="font-size: 0.9rem;">Thay đổi thông tin?</a>
+    </div>
+
+    <div style="text-align: right; margin-top: 20px;" data-aos="fade-up" data-aos-delay="300">
+        <form action="{% url 'orders:confirm_order' %}" method="POST">
+            {% csrf_token %}
+            <a href="{% url 'services:view_cart' %}" class="btn" style="background-color: #6c757d; margin-right: 10px;">Quay lại Giỏ hàng</a>
+            <button type="submit" class="btn" style="background-color: #28a745; font-size: 1.1rem; padding: 12px 25px;">
+                Xác nhận Mua (Chờ Admin duyệt)
+            </button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

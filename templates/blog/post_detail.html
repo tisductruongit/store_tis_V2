@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %} 
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="container page-container" data-aos="fade-up">
+
+    <div class="post-detail-layout">
+        <main class="post-main-content">
+            <h1 class="post-title">{{ post.title }}</h1>
+            <p class="post-meta">Đăng ngày: {{ post.created_at|date:"d/m/Y" }}</p>
+            
+            {% if post.image %}
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image-full">
+            {% endif %}
+            
+            <div class="post-content">
+                {{ post.content|linebreaks }}
+            </div>
+        </main>
+        
+        <aside class="post-sidebar" data-aos="fade-left" data-aos-delay="200">
+            <h3>Bài viết khác</h3>
+            {% for other_post in other_posts %}
+                <div class_service-item" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                    {% if other_post.image %}
+                        <img src="{{ other_post.image.url }}" alt="{{ other_post.title }}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 5px; margin-bottom: 10px;">
+                    {% endif %}
+                    <h4 style="margin-bottom: 5px;"><a href="{{ other_post.get_absolute_url }}">{{ other_post.title }}</a></h4>
+                    <small>Đăng ngày: {{ other_post.created_at|date:"d/m/Y" }}</small>
+                </div>
+            {% empty %}
+                <p>Không có bài viết nào khác.</p>
+            {% endfor %}
+        </aside>
+    </div>
+
+    <style>
+        .post-detail-layout {
+            display: flex;
+            gap: 30px;
+        }
+        .post-main-content {
+            flex: 3; /* Chiếm 3 phần */
+            min-width: 0; /* Sửa lỗi flexbox */
+        }
+        .post-sidebar {
+            flex: 1; /* Chiếm 1 phần */
+            min-width: 0;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            height: fit-content;
+        }
+        .post-sidebar h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .post-title {
+            font-size: 2.5rem;
+            color: var(--dark-grey);
+            margin-bottom: 10px;
+        }
+        .post-meta {
+            font-style: italic;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        .post-image-full {
+            width: 100%;
+            height: auto;
+            max-height: 450px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        .post-content {
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        @media (max-width: 768px) {
+            .post-detail-layout {
+                flex-direction: column;
+            }
+        }
+    </style>
+</div> {% endblock %}

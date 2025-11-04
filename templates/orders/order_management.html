@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Quản lý Đơn hàng{% endblock %}
+
+{% block content %}
+<div class="container page-container" data-aos="fade-up">
+
+    <h2 data-aos="fade-down">Quản lý Đơn hàng (Hóa đơn)</h2>
+    <p data-aos="fade-up" data-aos-delay="100">Duyệt hoặc Hủy các đơn hàng đang chờ xử lý.</p>
+    
+    <div class="filter-bar" data-aos="fade-up" data-aos-delay="150">
+        <form method="GET" action="{% url 'orders:order_management_list' %}" id="multi-filter-form">
+            <div class="filter-group">
+                <label for="id_status">Trạng thái:</label>
+                {{ filter_form.status }}
+            </div>
+            <div class="filter-group">
+                <label for="id_category">Category Dịch vụ:</label>
+                {{ filter_form.category }}
+            </div>
+            <div class="filter-group">
+                <label for="id_supplier">Nhà Cung Cấp:</label>
+                {{ filter_form.supplier }}
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="btn">Lọc</button>
+                <a href="{% url 'orders:order_management_list' %}" class="btn btn-clear">Xóa Lọc</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive" data-aos="fade-up" data-aos-delay="200">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: var(--dark-grey); color: var(--white);">
+                    <th style="padding: 10px; text-align: left;">Hóa đơn #</th>
+                    <th style="padding: 10px; text-align: left;">Khách hàng</th>
+                    <th style="padding: 10px; text-align: left;">Chi tiết</th>
+                    <th style="padding: 10px; text-align: right;">Tổng giá</th>
+                    <th style="padding: 10px; text-align: center;">Trạng thái</th>
+                    <th style="padding: 10px; text-align: center;">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px;">
+                        <strong>#{{ order.id }}</strong><br>
+                        <small>{{ order.created_at|date:"d/m/Y H:i" }}</small>
+                    </td>
+                    <td style="padding: 10px;">{{ order.user.full_name|default:order.user.email }}</td>
+                    <td style="padding: 10px; font-size: 0.9rem;">
+                        <ul style="padding-left: 20px; margin: 0;">
+                            {% for item in order.items.all %}
+                                <li>{{ item.service_name }} ({{ item.duration_days }} ngày)</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td style="padding: 10px; text-align: right; font-weight: bold;">{{ order.total_price }} VND</td>
+                    <td style="padding: 10px; text-align: center;">
+                        <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+                    </td>
+                    <td style="padding: 10px; text-align: center;">
+                        {% if order.status == 'pending' %}
+                            <form action="{% url 'orders:update_order_status' order.id %}" method="POST" style="display: inline-block; margin-bottom: 5px;">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="confirmed">
+                                <button type="submit" class="btn" style="padding: 5px 10px; font-size: 0.9rem; background-color: #28a745;">
+                                    Xác nhận
+                                </button>
+                            </form>
+                            <form action="{% url 'orders:update_order_status' order.id %}" method="POST" style="display: inline-block;">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="cancelled">
+                                <button type="submit" class="btn" style="padding: 5px 10px; font-size: 0.9rem; background: #dc3545;">
+                                    Hủy đơn
+                                </button>
+                            </form>
+                        {% else %}
+                            <span style="color: #6c757d; font-style: italic;">Đã xử lý</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="padding: 15px; text-align: center;">
+                        Không có đơn hàng nào.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <style>
+        .status-badge { padding: 3px 8px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; color: white; }
+        .status-pending { background-color: #ffc107; color: #333; }
+        .status-confirmed { background-color: #28a745; }
+        .status-cancelled { background-color: #dc3545; }
+    </style>
+</div>
+{% endblock %}

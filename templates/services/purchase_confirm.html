@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Xác nhận Mua: {{ service.name }}
+{% endblock %}
+
+{% block content %}
+<div class="container page-container" data-aos="fade-up">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card" style="padding: 24px;">
+                <h2 class="card-title" style="text-align: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+                    Xác nhận Mua Dịch vụ
+                </h2>
+                
+                <div class="service-info" style="margin-bottom: 25px;">
+                    <h4>Dịch vụ bạn đã chọn:</h4>
+                    <h3 style="color: var(--primary, #e11d48);">{{ service.name }}</h3>
+                    
+                    <div>
+                        {% if service.is_price_on_contact %}
+                            <div class="price price--contact" style="font-size: 1.5rem; color: #0b5ed7; font-weight: 700;">Giá: Liên hệ</div>
+                            <p><i>Vui lòng tiếp tục, chúng tôi sẽ liên hệ với bạn để báo giá.</i></p>
+                        {% elif service.price is not None and service.price != 0 %}
+                            <div class="price" style="font-size: 1.7rem; font-weight: 800; color: var(--primary, #e11d48); margin: 8px 0 2px;">
+                                {{ service.price|floatformat:0 }} VNĐ
+                            </div>
+                        {% else %}
+                            <div class="price price--free" style="font-size: 1.5rem; color: #166534; font-weight: 700;">Miễn phí</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <p>Vui lòng chọn thời hạn cho gói dịch vụ này để hoàn tất việc mua.</p>
+
+                <form class="form" action="{% url 'services:purchase_service' service.pk %}" method="POST">
+                    {% csrf_token %}
+                    
+                    {{ form.as_p }}
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 12px; margin-top: 15px;">
+                        Xác nhận Mua
+                    </button>
+                </form>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="{% url 'services:service_detail' service.pk %}" style="text-decoration: none;">
+                        &laquo; Quay lại trang chi tiết dịch vụ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Thêm một chút style cho form cho đẹp hơn */
+.form p {
+    margin-bottom: 15px;
+}
+.form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--dark-grey, #333);
+}
+.form select, .form input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box; /* Đảm bảo padding không làm vỡ layout */
+}
+.btn-primary {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: var(--primary, #e11d48);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1rem;
+}
+.btn-primary:hover {
+    background: var(--primary-600, #be123c);
+}
+</style>
+{% endblock %}

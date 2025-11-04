@@ -1,0 +1,39 @@
+{% if not results.services and not results.posts %}
+    <div class="search-no-results">Không tìm thấy kết quả nào.</div>
+
+{% else %}
+
+    {% if results.services %}
+        <h5>Dịch vụ</h5>
+        {% for service in results.services %}
+            <a href="{{ service.url }}" class="search-result-item">
+                {% if service.thumbnail %}
+                    <img src="{{ service.thumbnail }}" alt="{{ service.name }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/40x40/eee/ccc?text=S" alt="{{ service.name }}">
+                {% endif %}
+                <div class="result-text">
+                    <strong>{{ service.name }}</strong>
+                    <small>{{ service.category }}</small>
+                </div>
+            </a>
+        {% endfor %}
+    {% endif %}
+    
+    {% if results.posts %}
+        <h5>Tin tức</h5>
+        {% for post in results.posts %}
+             <a href="{{ post.url }}" class="search-result-item">
+                {% if post.thumbnail %}
+                    <img src="{{ post.thumbnail }}" alt="{{ post.name }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/40x40/eee/ccc?text=P" alt="{{ post.name }}">
+                {% endif %}
+                <div class="result-text">
+                    <strong>{{ post.name }}</strong>
+                </div>
+            </a>
+        {% endfor %}
+    {% endif %}
+
+{% endif %}

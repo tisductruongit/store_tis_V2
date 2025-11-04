@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %} 
+
+{% block title %}
+    {% if current_category %}
+        Dịch vụ: {{ current_category.name }}
+    {% else %}
+        Danh sách Dịch vụ
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container page-container" data-aos="fade-up">
+    
+    <div class="service-page-layout">
+        <aside class="category-sidebar" data-aos="fade-right">
+            <h3>Danh Mục Dịch Vụ</h3>
+            <ul>
+                <li {% if not current_category %}class="active"{% endif %}>
+                    <a href="{% url 'services:service_list' %}">Tất Cả Dịch Vụ</a>
+                </li>
+                {% for cat in categories %}
+                    <li {% if current_category.slug == cat.slug %}class="active"{% endif %} 
+                        style="--category-color: {{ cat.color|default:'var(--text-color)' }};"> 
+                        <a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a>
+                    </li>
+                {% empty %}
+                    <li>Chưa có danh mục nào.</li>
+                {% endfor %}
+            </ul>
+        </aside>
+
+        <main class="service-main-content">
+            <h2 data-aos="fade-down">
+                {% if current_category %}
+                    {{ current_category.name }}
+                {% else %}
+                    Tất Cả Dịch Vụ
+                {% endif %}
+            </h2>
+            
+            {% if current_category and current_category.description %}
+                <p data-aos="fade-up" data-aos-delay="100">{{ current_category.description }}</p>
+            {% endif %}
+
+            <div class="service-grid"> 
+                {% for service in services %}
+                    <div class="service-item" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00"> 
+                        
+                        {% if service.thumbnail %}
+                        <div style="flex-shrink: 0;"> <img src="{{ service.thumbnail.url }}" alt="{{ service.name }}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px;"> </div>
+                        {% else %}
+                        <div style="flex-shrink: 0; width: 100%; height: 150px; background-color: #eee; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #aaa; font-style: italic;"> (No image) </div>
+                        {% endif %}
+                        
+                        <div class="service-item-content-wrapper"> 
+                            <div>
+                                <h3><a href="{% url 'services:service_detail' service.pk %}">{{ service.name }}</a></h3>
+                                {% if service.category %}
+                                <small style="color: {{ service.category.color }}; font-weight: bold;">
+                                    Danh mục: <a href="{{ service.category.get_absolute_url }}" style="color: {{ service.category.color }};">{{ service.category.name }}</a>
+                                </small>
+                                {% endif %}
+                                <p>{{ service.description|truncatewords:20 }}</p> 
+                            </div>
+                            
+                            <div class="service-card-actions">
+                                <p class="service-price"> 
+                                    <strong>Giá:</strong> 
+                                    {% if service.is_price_on_contact %} <span style="color: #007bff; font-weight: bold;">Liên hệ</span>
+                                    {% elif service.price is not None %} {{ service.price }} VND
+                                    {% else %} <span style="color: #6c757d;">--</span>
+                                    {% endif %}
+                                </p>
+                                <a href="{% url 'services:service_detail' service.pk %}" class="btn btn-card-primary">Xem chi tiết</a>
+                                
+                                {% if user.is_authenticated %}
+                                <a href="{% url 'request_consultation' service.pk %}" 
+                                   class="btn btn-consult btn-card-secondary" 
+                                   data-service-name="{{ service.name }}">
+                                   Tư vấn
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p data-aos="fade-up">Không có dịch vụ nào trong danh mục này.</p>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .service-page-layout { display: flex; gap: 30px; }
+        .category-sidebar { flex: 0 0 200px; background-color: #f8f9fa; padding: 20px; border-radius: 8px; height: fit-content; }
+        .category-sidebar h3 { margin-top: 0; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        .category-sidebar ul { list-style: none; padding: 0; margin: 0; }
+        .category-sidebar li a { display: block; padding: 8px 10px; color: var(--text-color); text-decoration: none; transition: all 0.2s ease; border-left: 4px solid transparent; border-radius: 0 4px 4px 0; }
+        .category-sidebar li:not(.active) a:hover { color: var(--category-color); background-color: hsla(from var(--category-color) h s l / 0.1); }
+        .category-sidebar li.active a { color: var(--category-color); font-weight: bold; border-left: 4px solid var(--category-color); background-color: hsla(from var(--category-color) h s l / 0.1); }
+        .category-sidebar li.active a[href="{% url 'services:service_list' %}"] { color: var(--primary-red); border-left-color: var(--primary-red); background-color: #fbebee; }
+        .service-main-content { flex: 1; }
+        .service-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .service-grid .service-item { margin-bottom: 0; }
+         @media (max-width: 768px) {
+            .service-page-layout { flex-direction: column; }
+            .category-sidebar { flex-basis: auto; width: 100%; margin-bottom: 20px; }
+            .service-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+        }
+    </style>
+</div>
+{% endblock %}

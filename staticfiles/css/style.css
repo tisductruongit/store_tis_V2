@@ -1,0 +1,438 @@
+/* store_tis/static/css/style.css */
+
+/* --- Biến CSS cho màu sắc dễ quản lý --- */
+:root {
+    --primary-red: #e4002b;
+    --dark-grey: #333333;
+    --dark-bg: #ffffff; /* NỀN TRẮNG */
+    --light-grey: #ffffff; /* NỀN BODY TRẮNG */
+    --white: #ffffff;
+    --text-color: #444444; /* Màu chữ chính */
+}
+
+/* --- Global Styles --- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--light-grey);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+.container {
+    max-width: 1100px; 
+    margin: 0 auto;
+    padding: 2rem;
+    background: var(--white);
+    border-radius: 10px;
+}
+.page-container {
+    margin-top: 100px; 
+    margin-bottom: 2rem;
+    box-shadow: none; 
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--dark-grey);
+    margin-bottom: 1rem;
+}
+a {
+    color: var(--primary-red);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+a:hover {
+    color: #a0001f;
+}
+
+button, input[type="submit"], .btn {
+    display: inline-block;
+    background: var(--primary-red);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+button:hover, input[type="submit"]:hover, .btn:hover {
+    background: #a0001f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+input[type="file"],
+input[type="date"],
+input[type="color"], 
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box; 
+}
+
+/* --- Navbar (Redesign) --- */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 1.2rem 2.5rem;
+    transition: background-color 0.4s ease, padding 0.4s ease;
+    background-color: transparent; 
+}
+.navbar.scrolled {
+    background-color: var(--dark-bg); /* Nền trắng khi cuộn */
+    padding: 0.8rem 2.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid #eee; 
+}
+.navbar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.nav-logo img {
+    height: 45px;
+    transition: height 0.4s ease;
+}
+.navbar.scrolled .nav-logo img {
+    height: 40px;
+}
+.nav-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; /* Cho phép rớt hàng */
+    gap: 10px 15px; /* 10px dọc, 15px ngang */
+    justify-content: flex-end; /* Đẩy sang phải */
+}
+.nav-links a {
+    color: var(--white); /* Chữ TRẮNG khi nav trong suốt (trên hero) */
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+.navbar.scrolled .nav-links a {
+    color: var(--dark-grey); /* Chữ ĐEN/XÁM khi nền trắng */
+}
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(0);
+    color: var(--white);
+}
+.navbar.scrolled .nav-links a:hover {
+    background-color: transparent; /* Bỏ nền hover */
+    color: var(--primary-red); /* Chữ ĐỎ khi hover */
+}
+.nav-links .nav-link-admin {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+.nav-links .nav-link-admin:hover {
+    opacity: 1;
+}
+.btn-nav-cart {
+    background-color: var(--primary-red);
+    padding: 8px 18px;
+    border-radius: 50px;
+}
+.btn-nav-cart:hover {
+    background-color: #a0001f;
+    box-shadow: 0 4px 10px rgba(228, 0, 43, 0.3);
+    transform: translateY(-2px);
+}
+.navbar.scrolled .btn-nav-cart {
+    background-color: var(--primary-red);
+    color: var(--white);
+}
+.navbar.scrolled .btn-nav-cart:hover {
+    background-color: #a0001f;
+    color: var(--white);
+}
+
+/* --- CSS MỚI CHO LINK GIỎ HÀNG --- */
+.nav-links .nav-cart-link {
+    font-weight: bold;
+    /* Tự động kế thừa màu (trắng) từ .nav-links a */
+}
+.nav-links .nav-cart-link .fa-shopping-cart {
+    margin-right: 5px;
+}
+/* Khi nav cuộn (nền trắng) */
+.navbar.scrolled .nav-links .nav-cart-link {
+    color: var(--dark-grey); /* Chữ đen/xám */
+}
+.navbar.scrolled .nav-links .nav-cart-link:hover {
+    color: var(--primary-red); /* Hover đỏ */
+    background-color: transparent;
+}
+/* ---------------------------------- */
+
+.navbar.scrolled .role-badge-nav {
+    background-color: var(--primary-red);
+    color: var(--white);
+}
+
+/* --- Khối Hero (Trang chủ) --- */
+.hero-section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--white);
+    overflow: hidden;
+}
+.hero-bg-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+}
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: -1;
+}
+.hero-content {
+    z-index: 1;
+}
+.hero-content h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 1rem;
+}
+.hero-content p {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+}
+.btn-hero {
+    font-size: 1.1rem;
+    padding: 15px 35px;
+    border-radius: 50px;
+    background-color: var(--primary-red);
+    border: 2px solid var(--primary-red);
+}
+.btn-hero:hover {
+    background-color: transparent;
+    border-color: var(--white);
+    color: var(--white);
+}
+
+/* --- Footer (Redesign) --- */
+.main-footer {
+    background-color: var(--dark-bg); /* Nền trắng */
+    color: var(--text-color); /* Chữ xám tối */
+    padding: 4rem 0 0 0;
+    border-top: 1px solid #eee; /* Viền trên */
+}
+.main-footer .container {
+    background: none;
+    box-shadow: none;
+    padding: 0 2rem;
+    margin: 0 auto;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.footer-content {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr; 
+    gap: 30px;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid #ddd; /* Viền xám nhạt */
+}
+.footer-column.footer-company-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.footer-column .footer-logo {
+    height: auto;
+    width: 150px;
+    max-width: 100%;
+    margin-bottom: 1.5rem;
+}
+.footer-column .footer-company-name {
+    color: var(--primary-red);
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+.footer-column h4 {
+    color: var(--dark-grey); /* Tiêu đề xám tối */
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+.footer-column ul { list-style: none; padding: 0; }
+.footer-column li { margin-bottom: 10px; }
+.footer-column a { color: var(--text-color); } /* Link xám tối */
+.footer-column a:hover { color: var(--primary-red); padding-left: 5px; } /* Hover đỏ */
+.footer-column p { font-size: 0.95rem; line-height: 1.7; margin-bottom: 10px; }
+.footer-bottom {
+    text-align: center;
+    padding: 1.5rem 0;
+    font-size: 0.9rem;
+}
+
+/* --- CSS Cũ (Đã dọn dẹp) --- */
+.messages { list-style: none; padding: 0; margin-bottom: 20px; }
+.messages li { padding: 12px 15px; margin-bottom: 10px; border-radius: 5px; font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
+.messages li.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.messages li.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.messages li.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+.messages li.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+form p { margin-bottom: 1rem; }
+form label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--dark-grey); }
+form input[type="checkbox"] { width: auto; margin-right: 5px; }
+.errorlist { color: var(--primary-red); list-style: none; padding: 0; margin: 5px 0 0 0; font-weight: bold; font-size: 0.9rem; }
+.service-item { border: 1px solid #e0e0e0; padding: 20px; margin-bottom: 20px; border-radius: 8px; background: var(--white); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; align-items: stretch; }
+.service-grid .service-item { margin-bottom: 0; }
+.service-item h3 { margin-top: 0; color: var(--primary-red); }
+.service-item .btn { display: inline-block; padding: 8px 15px; background: var(--dark-grey); color: var(--white); border-radius: 5px; margin-top: 10px; flex-shrink: 0; }
+.service-item .btn:hover { background: var(--primary-red); }
+.service-item-content-wrapper { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; padding-top: 10px; }
+.service-price { min-height: 1.6em; margin-bottom: 0; }
+.service-item-content-wrapper .btn { width: auto; align-self: flex-start; margin-top: 10px; }
+.service-detail-section { margin-bottom: 2rem; }
+.service-detail-section h3 { border-bottom: 2px solid var(--primary-red); padding-bottom: 5px; margin-bottom: 1rem; }
+.service-detail-content { background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 5px; margin-bottom: 10px; }
+.service-actions { margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1.5rem; }
+.service-actions button, .service-actions a { margin-right: 15px; margin-bottom: 10px; }
+.image-gallery { display: flex; flex-wrap: wrap; gap: 10px; }
+.gallery-item img { width: 150px; height: 100px; object-fit: cover; border-radius: 5px; }
+.gallery-item p { text-align: center; font-size: 0.9rem; margin-top: 5px; }
+.dashboard-section { margin-bottom: 2rem; border-bottom: 1px solid #eee; padding-bottom: 1.5rem; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.dashboard-section h3 { color: var(--primary-red); }
+.dashboard-section ul { list-style: none; padding: 0; }
+.dashboard-section li { background: #fdfdfd; border: 1px solid #eee; padding: 10px 15px; margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.dashboard-section li .btn { padding: 5px 10px; font-size: 0.9rem; text-decoration: none; }
+.expired-tag { color: var(--primary-red); font-weight: bold; margin-left: 10px; }
+.role-badge-nav { display: inline-block; padding: 4px 12px; font-size: 0.8rem; font-weight: bold; background-color: var(--primary-red); color: var(--white); border-radius: 20px; margin-left: 10px; vertical-align: middle; }
+.form-row { display: flex; gap: 20px; flex-wrap: wrap; }
+.form-group { flex: 1; min-width: 300px; }
+.management-form p { display: flex; flex-direction: column; }
+.management-form label { margin-bottom: 5px; font-weight: bold; color: var(--dark-grey); }
+.current-image { font-size: 0.9rem; color: #555; }
+.current-image img { max-height: 100px; width: auto; border-radius: 5px; border: 1px solid #ddd; margin-top: 5px; }
+.formset-item { border: 1px solid #e0e0e0; padding: 20px; margin-bottom: 15px; border-radius: 8px; background: #fdfdfd; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.delete-checkbox { display: block !important; flex-direction: row !important; align-items: center; margin-top: 10px; }
+.delete-checkbox input[type="checkbox"] { width: auto; margin-right: 10px; }
+.delete-checkbox label { font-weight: normal; color: var(--primary-red); }
+.form-actions { margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1.5rem; }
+.form-actions .btn { margin-right: 10px; }
+.duration-helpers { display: flex; gap: 10px; background-color: #f9f9f9; padding: 10px; border-radius: 5px; }
+.form-group-inline { flex: 1; }
+.form-group-inline label { font-size: 0.9rem; font-weight: normal; }
+.duration-helpers input { background-color: var(--white); }
+#total-days-display { color: var(--primary-red); font-weight: bold; }
+.management-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary-red); padding-bottom: 10px; margin-bottom: 20px; }
+.management-header h2 { margin: 0; }
+.filter-bar { margin-bottom: 25px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; }
+.filter-bar form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 15px; }
+.filter-group { flex: 1; min-width: 180px; display: flex; flex-direction: column; }
+.filter-bar label { font-weight: bold; font-size: 0.9rem; margin-bottom: 5px; color: #555; }
+.filter-bar select { margin: 0; padding: 8px; margin-bottom: 0; }
+.filter-actions { display: flex; gap: 10px; padding-bottom: 1px; }
+.filter-actions .btn { padding: 8px 15px; font-size: 0.9rem; }
+.filter-actions .btn-clear { background-color: var(--dark-grey); color: var(--white); }
+.filter-actions .btn-clear:hover { background-color: #555; }
+.category-select-wrapper { display: flex; align-items: center; gap: 5px; }
+.category-select-wrapper select { flex-grow: 1; }
+.category-select-wrapper .btn-sm { padding: 5px 10px; font-size: 1rem; line-height: 1; height: 38px; flex-shrink: 0; }
+.category-select-wrapper .btn-edit { background-color: #ffc107; }
+.category-select-wrapper .btn-edit:hover { background-color: #e0a800; }
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+.modal-content { background-color: #fefefe; margin: 15% auto; padding: 30px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px; position: relative; }
+.close-modal-btn { color: #aaa; position: absolute; top: 10px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; }
+.close-modal-btn:hover, .close-modal-btn:focus { color: black; text-decoration: none; }
+#category-modal-form label, #consult-modal-form label { font-weight: bold; }
+#category-modal-form input[type="text"] { width: 100%; }
+#category-modal-form input[type="color"] { width: 100%; height: 40px; padding: 0 5px; border-radius: 5px; border: 1px solid #ddd; box-sizing: border-box; }
+#modal-error-message { margin-top: 10px; }
+.consult-info p { margin-bottom: 5px; }
+.service-card-actions { margin-top: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.service-card-actions .service-price { margin: 0; min-height: 0; flex-basis: 100%; margin-bottom: 5px; }
+.service-item-content-wrapper .btn { width: auto; align-self: flex-start; margin-top: 0; flex-grow: 1; text-align: center; }
+
+@media (max-width: 900px) {
+    .footer-content { 
+        grid-template-columns: 1fr 1fr;
+    }
+}
+@media (max-width: 768px) {
+    nav { flex-direction: column; align-items: flex-start; }
+    nav .nav-links { margin-top: 10px; width: 100%; display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+    nav .nav-links a { margin-left: 0; margin-right: 0; display: block; padding: 8px 10px; width: 100%; border-radius: 5px; }
+    .navbar.scrolled .nav-links a {
+        color: var(--dark-grey);
+    }
+    .navbar.scrolled .nav-links a:hover {
+        color: var(--primary-red);
+        background-color: #f4f4f4;
+    }
+    .role-badge-nav { margin-left: 0; margin-top: 0; display: inline-block; width: auto; text-align: center; padding: 6px 12px; }
+    .btn-nav-cart { width: 100%; text-align: center; margin-top: 0; padding: 10px 20px; }
+    .container { padding: 1rem; margin: 1rem auto; }
+    body:not(.home-page) .container.page-container { padding-top: 80px; }
+    .home-hero h1 { font-size: 2.2rem; }
+    .hero-content p { font-size: 1.1rem; }
+    .form-row { gap: 0; }
+    .form-group { min-width: 100%; margin-bottom: 15px; }
+    .management-header { flex-direction: column; align-items: stretch; }
+    .management-header a.btn { margin-top: 15px; text-align: center; }
+    .filter-bar form { flex-direction: column; align-items: stretch; }
+    .filter-group { min-width: 100%; }
+    .filter-actions { flex-direction: column; }
+    .filter-actions .btn { width: 100%; }
+    .footer-content { grid-template-columns: 1fr; }
+}
+
+/* Hiệu ứng Animation (Hover/Active) */
+.service-item:hover,
+.dashboard-section li:hover,
+.formset-item:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+.home-hero:hover {
+    transform: scale(1.01);
+     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+button:active, .btn:active, input[type="submit"]:active {
+    transform: translateY(2px) scale(0.98);
+}
+.nav-links a:hover {
+    color: var(--white);
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(0);
+}
+.navbar.scrolled .nav-links a:hover {
+    color: var(--primary-red);
+    background-color: transparent;
+    transform: translateY(0);
+}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Quản lý Yêu cầu Tư vấn{% endblock %}
+
+{% block content %}
+    <h2 data-aos="fade-down">Quản lý Yêu cầu Tư vấn</h2>
+    <p data-aos="fade-up">
+        {% if request.user.is_superuser %}
+            Bạn đang xem TẤT CẢ yêu cầu.
+        {% else %}
+            Bạn đang xem các yêu cầu ĐƯỢC GÁN cho bạn.
+        {% endif %}
+    </p>
+
+    <div class="filter-bar" data-aos="fade-up" data-aos-delay="100">
+        <strong>Lọc trạng thái:</strong>
+        <a href="?status=pending" class="filter-link {% if current_filter == 'pending' %}active{% endif %}">Đang chờ (Mới/Đã giao)</a>
+        <a href="?status=completed" class="filter-link {% if current_filter == 'completed' %}active{% endif %}">Đã hoàn thành</a>
+        <a href="?status=all" class="filter-link {% if current_filter == 'all' %}active{% endif %}">Tất cả</a>
+    </div>
+
+    <div class="table-responsive" data-aos="fade-up" data-aos-delay="200">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: var(--dark-grey); color: var(--white);">
+                    <th style="padding: 10px; text-align: left;">Khách hàng</th>
+                    <th style="padding: 10px; text-align: left;">Dịch vụ</th>
+                    <th style="padding: 10px; text-align: left;">Trạng thái</th>
+                    {% if request.user.is_superuser %}
+                        <th style="padding: 10px; text-align: left;">Staff được gán</th>
+                    {% endif %}
+                    <th style="padding: 10px; text-align: right;">Ngày yêu cầu</th>
+                    <th style="padding: 10px; text-align: center;">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for consult in consult_list %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px;">{{ consult.user }}</td>
+                    <td style="padding: 10px;">{{ consult.service.name }}</td>
+                    <td style="padding: 10px;">
+                        <span class="status-badge status-{{ consult.status }}">{{ consult.get_status_display }}</span>
+                    </td>
+                    {% if request.user.is_superuser %}
+                        <td style="padding: 10px;">{{ consult.assigned_staff|default:"Chưa gán" }}</td>
+                    {% endif %}
+                    <td style="padding: 10px; text-align: right;">{{ consult.created_at|date:"d/m/Y H:i" }}</td>
+                    <td style="padding: 10px; text-align: center;">
+                        <a href="{% url 'consultation_detail' consult.pk %}" class="btn" style="padding: 5px 10px; font-size: 0.9rem; background-color: #ffc107; color: #333;">Xem/Cập nhật</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="{% if request.user.is_superuser %}6{% else %}5{% endif %}" style="padding: 15px; text-align: center;">
+                        Không có yêu cầu nào.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <style>
+        .status-badge { padding: 3px 8px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; }
+        .status-new { background-color: #fbebee; color: var(--primary-red); }
+        .status-assigned { background-color: #d1ecf1; color: #0c5460; }
+        .status-completed { background-color: #d4edda; color: #155724; }
+    </style>
+{% endblock %}

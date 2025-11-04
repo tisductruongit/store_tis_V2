@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Thêm User con (bằng SĐT){% endblock %}
+
+{% block content %}
+    <h2>Thêm User con bằng Số Điện Thoại</h2>
+    <p>Tài khoản này sẽ được liên kết với bạn. Bạn có thể gán dịch vụ cho họ sau khi tạo. Mật khẩu tạm thời sẽ được cung cấp sau khi tạo.</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Tạo User con</button>
+    </form>
+{% endblock %}

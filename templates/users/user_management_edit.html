@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Chỉnh sửa: {{ user_to_edit }}{% endblock %}
+
+{% block content %}
+    <h2>Chỉnh sửa User: {{ user_to_edit.full_name|default:user_to_edit }}</h2>
+    <p>Thay đổi vai trò, gán User Cấp Cao, hoặc kích hoạt/vô hiệu hóa tài khoản.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="errorlist">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <p>
+                {{ field.label_tag }}<br>
+                {{ field }}
+                
+                {% if field.help_text %}
+                    <small style="color: #666;">{{ field.help_text }}</small>
+                {% endif %}
+                
+                {% for error in field.errors %}
+                    <div class="errorlist" style="color: var(--primary-red);">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            </p>
+        {% endfor %}
+
+        <button type="submit">Lưu thay đổi</button>
+        <a href="{% url 'user_management_list' %}" class="btn" style="background-color: #6c757d;">Hủy bỏ</a>
+    </form>
+{% endblock %}

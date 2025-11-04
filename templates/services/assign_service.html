@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Gán dịch vụ {{ service.name }}{% endblock %}
+
+{% block content %}
+    <h2>Gán dịch vụ: {{ service.name }}</h2>
+    <p>Chọn user con và thời hạn gói bạn muốn gán.</p>
+
+    <form method="post" data-aos="fade-up" class="management-form">
+        {% csrf_token %}
+        {{ form.as_p }} {# Form này đã bao gồm cả user con và thời hạn #}
+        <button type="submit">Xác nhận gán</button>
+         <a href="{% url 'service_detail' service.pk %}" class="btn" style="background-color: #6c757d;">Hủy bỏ</a>
+    </form>
+{% endblock %}

@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Trang chủ - TIS Insurance Broker{% endblock %}
+
+{% block body_class %}home-page{% endblock %}
+
+{% block content %}
+
+<section class="hero-section">
+    <div class="hero-overlay"></div>
+    <img 
+        src="{% static 'img/FULL.jpg' %}"
+        class="hero-bg-image" 
+        alt="Office Background - TIS Insurance Broker"
+        loading="lazy"
+    >
+
+    <div class="hero-content">
+        <h1 class="hero-title" data-aos="fade-up">TIS INSURANCE BROKER</h1>
+        
+        <p class="hero-slogan" data-aos="fade-up" data-aos-delay="200">
+            Your 
+            <span style="color: #ff0000; font-weight: bold;">T</span>rustful 
+            <span style="color: #ff0000; font-weight: bold;">I</span>nsurance 
+            <span style="color: #ff0000; font-weight: bold;">S</span>pecialist
+        </p>
+
+        <div class="hero-cta" data-aos="fade-up" data-aos-delay="400">
+            <a href="{% url 'services:service_list' %}" class="btn btn-primary btn-discover">
+                Khám phá Dịch vụ
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="stats-achievements-section" style="padding: 4rem 0; background-color: #f8f8f8;">
+    <div class="container stats-container" style="max-width: 1230px; margin: 0 auto;">
+        
+        <div class="row stats-row" style="display: flex; justify-content: space-around; text-align: center; flex-wrap: wrap;">
+            
+            {% comment %} Chỉ số 1: Annual Arranged Premium {% endcomment %}
+            <div class="col-stat" data-aos="fade-up" data-aos-delay="100" style="padding: 10px;">
+                <div style="height: 230px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center;">
+                    <lottie-player 
+                        src="{% static 'lottie/icon_money.json' %}" 
+                        background="transparent" 
+                        speed="1" 
+                        style="width: 230px; height: 230px;" 
+                        loop 
+                        autoplay>
+                    </lottie-player>
+                </div>
+                
+                <p class="stat-value" style="font-size: 2.5rem; font-weight: bold; color: #cc0000; margin-bottom: 0; line-height: 1.1;">
+                    ~USD <span class="count-up" data-target="10">0</span>M
+                </p>
+                <p class="stat-label" style="margin-top: 5px; font-size: 1rem; line-height: 1.3;">Annual Arranged Premium</p>
+            </div>
+
+            {% comment %} Chỉ số 2: Growth Direct Premium {% endcomment %}
+            <div class="col-stat" data-aos="fade-up" data-aos-delay="200" style="padding: 10px;">
+                <div style="height: 230px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center;">
+                    <lottie-player 
+                        src="{% static 'lottie/icon_growth.json' %}" 
+                        background="transparent" 
+                        speed="1" 
+                        style="width: 230px; height: 230px;" 
+                        loop 
+                        autoplay>
+                    </lottie-player>
+                </div>
+                <p class="stat-value" style="font-size: 2.5rem; font-weight: bold; color: #cc0000; margin-bottom: 0; line-height: 1.1;">
+                    <span class="count-up" data-target="61">0</span>%
+                </p>
+                <p class="stat-label" style="margin-top: 5px; font-size: 1rem; line-height: 1.3;">Growth Direct Premium<br>2024 vs 2023</p>
+            </div>
+            
+            {% comment %} Chỉ số 3: Broker Rank {% endcomment %}
+            <div class="col-stat" data-aos="fade-up" data-aos-delay="300" style="padding: 10px;">
+                <div style="height: 230px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center;">
+                    <lottie-player 
+                        src="{% static 'lottie/icon_trophy.json' %}" 
+                        background="transparent" 
+                        speed="1" 
+                        style="width: 230px; height: 230px;" 
+                        loop 
+                        autoplay>
+                    </lottie-player>
+                </div>
+                <p class="stat-value" style="font-size: 2.5rem; font-weight: bold; color: #cc0000; margin-bottom: 0; line-height: 1.1;">
+                    No. <span class="count-up" data-target="1">0</span>
+                </p>
+                <p class="stat-label" style="margin-top: 5px; font-size: 1rem; line-height: 1.3;">Broker<br>in Vietnam for Hull & P&I</p>
+            </div>
+
+            {% comment %} Chỉ số 4: Experts Experience {% endcomment %}
+            <div class="col-stat" data-aos="fade-up" data-aos-delay="400" style="padding: 10px;">
+                <div style="height: 230px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center;">
+                    <lottie-player 
+                        src="{% static 'lottie/icon_experts.json' %}" 
+                        background="transparent" 
+                        speed="1" 
+                        style="width: 230px; height: 230px;" 
+                        loop 
+                        autoplay>
+                    </lottie-player>
+                </div>
+                <p class="stat-value" style="font-size: 2.5rem; font-weight: bold; color: #cc0000; margin-bottom: 0; line-height: 1.1;">
+                    <span class="count-up" data-target="20">0</span>+
+                </p>
+                <p class="stat-label" style="margin-top: 5px; font-size: 1rem; line-height: 1.3;">Experts<br>~ Average <span class="count-up" data-target="12">0</span> years of Experience</p>
+            </div>
+
+            {% comment %} Chỉ số 5: Retention Rate {% endcomment %}
+            <div class="col-stat" data-aos="fade-up" data-aos-delay="500" style="padding: 10px;">
+                <div style="height: 230px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center;">
+                    <lottie-player 
+                        src="{% static 'lottie/icon_retention.json' %}" 
+                        background="transparent" 
+                        speed="1" 
+                        style="width: 230px; height: 230px;" 
+                        loop 
+                        autoplay>
+                    </lottie-player>
+                </div>
+                <p class="stat-value" style="font-size: 2.5rem; font-weight: bold; color: #cc0000; margin-bottom: 0; line-height: 1.1;">
+                    <span class="count-up" data-target="96">0</span>%
+                </p>
+                <p class="stat-label" style="margin-top: 5px; font-size: 1rem; line-height: 1.3;">Retention Rate</p>
+            </div>
+        </div>
+        
+        <div class="association-row" style="text-align: center; margin-top: 4rem;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 2rem;">TIS Insurance Broker – Member of International Associations:</h3>
+            <div class="association-logos" style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap;">
+                
+                <div class="logo-item" data-aos="fade-up" data-aos-delay="600">
+                    <img src="{% static 'img/IBN-Logo.svg' %}" alt="IBN Logo" style="height: 60px; width: auto; max-width: 100%;"> 
+                </div>
+                <div class="logo-item" data-aos="fade-up" data-aos-delay="700">
+                    <img src="{% static 'img/euribron.svg' %}" alt="Euribron Logo" style="height: 60px; width: auto; max-width: 100%;">
+                </div>
+                <div class="logo-item" data-aos="fade-up" data-aos-delay="800">
+                    <img src="{% static 'img/uniba.png' %}" alt="UNIBA Partners Logo" style="height: 60px; width: auto; max-width: 100%;">
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+
+
+<div class="container page-container" style="padding-top: 3rem; padding-bottom: 3rem; max-width: 1230px; margin: 0 auto;">
+    <div class="dashboard-section">
+        <h2 style="text-align: center; font-size: 2.2rem; margin-bottom: 2rem;" data-aos="fade-up">Tin tức & Quảng cáo</h2>
+        
+        {% for post in posts %}
+            <div class="service-item" style="display: flex; gap: 20px; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px;" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
+                {% if post.image %}
+                    <div style="flex-shrink: 0;">
+                        <a href="{{ post.get_absolute_url }}">
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}" style="width: 230px; height: 150px; object-fit: cover; border-radius: 8px;">
+                        </a>
+                    </div>
+                {% endif %}
+                <div>
+                    <h3 style="margin-top: 0;">
+                        <a href="{{ post.get_absolute_url }}" style="color: #333; text-decoration: none;">{{ post.title }}</a>
+                    </h3>
+                    <p style="color: #555;">{{ post.content|linebreaks|truncatewords:50 }}</p>
+                    <small style="color: #999;">Đăng ngày: {{ post.created_at|date:"d/m/Y" }}</small>
+                </div>
+            </div>
+        {% empty %}
+            <p data-aos="fade-up" style="text-align: center;">Hiện chưa có tin tức nào.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('.count-up');
+        const statsSection = document.querySelector('.stats-achievements-section');
+        let animationStarted = false;
+
+        const animateCount = (element) => {
+            const target = parseInt(element.getAttribute('data-target'));
+            const duration = 2000; 
+            let start = 0;
+            
+            const step = (timestamp) => {
+                if (!start) start = timestamp;
+                const progress = timestamp - start;
+                // Sử dụng Math.ceil để đảm bảo các số nguyên được hiển thị
+                const value = Math.ceil(Math.min(target, (target * progress / duration)));
+                
+                element.textContent = value.toLocaleString(); 
+
+                if (progress < duration) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    element.textContent = target.toLocaleString();
+                }
+            };
+
+            window.requestAnimationFrame(step);
+        };
+
+        const observerOptions = {
+            root: null, 
+            rootMargin: '0px',
+            threshold: 0.2 // Kích hoạt khi 20% section hiển thị
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !animationStarted) {
+                    counters.forEach(animateCount);
+                    animationStarted = true; 
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, observerOptions);
+
+        if (statsSection) {
+            observer.observe(statsSection);
+        }
+    });
+</script>
+
+{% endblock %}

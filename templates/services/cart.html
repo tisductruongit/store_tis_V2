@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Giỏ Hàng Của Bạn{% endblock %}
+
+{% block content %}
+<div class="container page-container" data-aos="fade-up">
+
+    <h2 data-aos="fade-down">Giỏ Hàng Của Bạn</h2>
+
+    {% if not cart_items %}
+        <p data-aos="fade-up">Giỏ hàng của bạn đang trống.</p>
+        <a href="{% url 'services:service_list' %}" class="btn" data-aos="fade-up">Xem Dịch vụ</a>
+    {% else %}
+        <form action="{% url 'orders:create_draft_order' %}" method="POST">
+            {% csrf_token %}
+            <div class="table-responsive" data-aos="fade-up">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 10px; text-align: center;">
+                                <input type="checkbox" name="cart_item_ids" value="{{ item.id }}" style="width: 20px; height: 20px;">
+                            </td>
+                            <td style="padding: 10px;">
+                                <a href="{% url 'services:service_detail' item.service.pk %}">
+                                    <strong>{{ item.service.name }}</strong>
+                                </a>
+                            </td>
+                            <td style="padding: 10px;">{{ item.duration_days }} ngày</td>
+                            <td style="padding: 10px;">
+                                {% if item.service.is_price_on_contact %} Liên hệ
+                                {% elif item.service.price is not None %} {{ item.service.price }} VND
+                                {% else %} -- {% endif %}
+                            </td>
+                            <td style="padding: 10px; text-align: center;">
+                                <a href="{% url 'services:service_detail' item.service.pk %}" class="btn" style="padding: 5px 10px; font-size: 0.9rem; margin-right: 5px; background-color: #28a745;">Mua/Gán</a>
+                                <a href="{% url 'services:remove_from_cart' item.id %}" class="btn" style="padding: 5px 10px; font-size: 0.9rem; background: #dc3545;">Xóa</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="submit" class="btn" style="background-color: #28a745; font-size: 1.1rem; padding: 12px 25px;">
+                    Tiến hành Mua hàng (Qua trang xác nhận)
+                </button>
+            </div>
+        </form>
+    {% endif %}
+    
+</div>
+{% endblock %}

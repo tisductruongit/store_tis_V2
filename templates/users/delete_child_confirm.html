@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Xác nhận xóa User con{% endblock %}
+
+{% block content %}
+    <h2>Xác nhận xóa User con</h2>
+    <p>Bạn có chắc chắn muốn xóa user con 
+        <strong>
+            {% if child_user.full_name %}{{ child_user.full_name }}
+            {% else %}({{ child_user.phone_number|default:child_user.cccd }})
+            {% endif %}
+        </strong> 
+    khỏi danh sách quản lý của bạn không?</p>
+    <p>Hành động này sẽ <strong>hủy liên kết</strong> user này khỏi tài khoản của bạn và <strong>hủy kích hoạt</strong> bất kỳ dịch vụ nào bạn đã mua cho họ.</p>
+    
+    <form method="post" action="{% url 'delete_child' child_user.pk %}">
+        {% csrf_token %}
+        <button type="submit" style="background-color: #dc3545;">Đồng ý, Xóa</button>
+        <a href="{% url 'dashboard' %}" class="btn" style="background-color: #6c757d; color: white;">Hủy bỏ</a>
+    </form>
+{% endblock %}

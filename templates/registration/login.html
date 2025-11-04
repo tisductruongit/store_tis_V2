@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Đăng nhập{% endblock %}
+
+{% block content %}
+<div class="container page-container">
+  <div class="auth-grid">
+    <div class="auth-card">
+      <h2 class="auth-title">Chào mừng trở lại 👋</h2>
+      <p class="auth-sub">Đăng nhập để tiếp tục.</p>
+
+      {% if form.non_field_errors %}
+      <div class="alert">
+        {% for error in form.non_field_errors %}
+          <div>{{ error }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <form method="post" class="auth-form" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="form-row-compact">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            <div class="input-wrap">
+              {{ field }}
+              {% if field.field.widget.input_type|default:'' == 'password' %}
+                <button type="button" class="btn-eye" data-toggle-password aria-label="Hiện/ẩn mật khẩu">👁</button>
+              {% endif %}
+            </div>
+            {% if field.help_text %}
+              <small class="form-hint">{{ field.help_text|safe }}</small>
+            {% endif %}
+            {% if field.errors %}
+              <small class="error-text">
+                {% for error in field.errors %}{{ error }}{% if not forloop.last %}<br/>{% endif %}{% endfor %}
+              </small>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <div class="between">
+          <div class="remember-me"><!-- nếu có checkbox remember, nó sẽ render ở trên --></div>
+          {# an toàn nếu chưa có route password_reset #}
+          {% url 'password_reset' as reset_url %}
+          {% if reset_url %}
+            <a class="link-muted" href="{{ reset_url }}">Quên mật khẩu?</a>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+      </form>
+
+      <div class="auth-alt">
+        <span>Chưa có tài khoản?</span>
+        <a href="{% url 'register' %}" class="link-accent">Đăng ký</a>
+      </div>
+    </div>
+
+    <aside class="auth-aside">
+      <h3 class="aside-title">An toàn & nhanh chóng</h3>
+      <ul class="aside-list">
+        <li>• Mã hóa thông tin đăng nhập</li>
+        <li>• Đăng nhập bằng email/username</li>
+        <li>• Hỗ trợ khôi phục mật khẩu</li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+  // Toggle password visibility
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('[data-toggle-password]');
+    if(!btn) return;
+    const input = btn.parentElement.querySelector('input[type="password"], input[type="text"]');
+    if(!input) return;
+    if(input.type === 'password'){
+      input.type = 'text';
+      btn.textContent = '🙈';
+    }else{
+      input.type = 'password';
+      btn.textContent = '👁';
+    }
+  });
+</script>
+{% endblock %}

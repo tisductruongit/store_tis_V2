@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Bảng điều khiển{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* CSS cho các thẻ dịch vụ trong dashboard */
+    .dashboard-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+    .dashboard-section h3 {
+        margin-top: 0;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .service-list-dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    .service-card {
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-left-width: 5px;
+        border-left-style: solid;
+    }
+    .service-card h4 {
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+    .service-card h4 a {
+        text-decoration: none;
+        color: #0056b3;
+    }
+    .service-card h4 a:hover {
+        text-decoration: underline;
+    }
+    .service-card p {
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+    .service-card .user-info {
+        font-style: italic;
+        color: #555;
+        background-color: #f5f5f5;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+    }
+
+    /* Trạng thái */
+    .service-card.status-active { border-left-color: #5cb85c; } /* Xanh lá */
+    .service-card.status-expiring { border-left-color: #f0ad4e; } /* Vàng */
+    .service-card.status-expired { border-left-color: #d9534f; } /* Đỏ */
+    /* Sửa 'status-pending' thành màu xanh dương cho nhất quán */
+    .service-card.status-pending { border-left-color: #0ea5e9; } /* Xanh dương */
+    
+    .status-text-warning { color: #c77a1e; font-weight: bold; }
+    .status-text-active { color: #3d8b3d; }
+    .status-text-expired { color: #a94442; }
+    /* Sửa 'status-text-pending' */
+    .status-text-pending { color: #0c87c0; font-weight: bold; }
+</style>
+{% endblock extra_head %}
+
+{% block content %}
+<div class="container page-container" data-aos="fade-up"> 
+    <h2 style="margin-bottom: 30px;">Xin chào, {{ user.full_name|default:user.email }}!</h2>
+
+    {% if is_child_user %}
+        <div class="alert alert-info" style="background-color: #f1fafd; border: 1px solid #17a2b8; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            Bạn là tài khoản phụ được quản lý bởi: <strong>{{ user.parent.full_name|default:user.parent.email }}</strong>.
+        </div>
+    {% endif %}
+
+    {% if not user.is_staff %}
+        <div class="dashboard-section">
+            <h3>Các đơn bảo hiểm của bạn ({{ active_subscriptions.count }})</h3>
+            
+            {% if active_subscriptions %}
+                <div class="service-list-dashboard">
+                    {% for sub in active_subscriptions %}
+                        <div class="service-card 
+                            {% if not sub.is_verified %}status-pending
+                            {% elif sub in expiring_soon_subscriptions %}status-expiring
+                            {% else %}status-active{% endif %}
+                        ">
+                            <h4>
+                                <a href="{% url 'services:service_detail' sub.service.pk %}">
+                                    {{ sub.service.name }}
+                                </a>
+                            </h4>
+                            
+                            {% comment %} --- LOGIC MỚI BẮT ĐẦU TỪ ĐÂY --- {% endcomment %}
+                            {% if sub.is_verified %}
+                                {% comment %} Nếu ĐÃ XÁC MINH: Hiển thị ngày tháng {% endcomment %}
+                                {% if sub in expiring_soon_subscriptions %}
+                                    <p class="status-text-warning">
+                                        <strong>Sắp hết hạn!</strong> 
+                                        Chỉ còn <strong>{{ sub.remaining_days }} ngày</strong><br>
+                                        (Hết hạn vào: {{ sub.expiration_date|date:"d/m/Y" }})
+                                    </p>
+                                {% else %}
+                                    <p class="status-text-active">
+                                        Còn <strong>{{ sub.remaining_days }} ngày</strong><br>
+                                        (Hết hạn vào: {{ sub.expiration_date|date:"d/m/Y" }})
+                                    </p>
+                                {% endif %}
+                                <p class="status-text-active" style="font-size: 0.85rem;">Trạng thái: Đã xác minh</p>
+                                <p style="font-size: 0.8rem; color: #666;">Ngày kích hoạt: {{ sub.start_date|date:"d/m/Y" }}</p>
+
+                            {% else %}
+                                {% comment %} Nếu CHƯA XÁC MINH: Chỉ hiển thị chờ {% endcomment %}
+                                <p class="status-text-pending">Trạng thái: Chờ xác minh</p>
+                                <p style="font-size: 0.85rem; color: #555;">(Gói {{ sub.duration_days }} ngày)</p>
+                            {% endif %}
+                            {% comment %} --- KẾT THÚC LOGIC MỚI --- {% endcomment %}
+
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Bạn chưa có dịch vụ nào đang hoạt động. <a href="{% url 'services:service_list' %}">Xem danh sách dịch vụ</a>.</p>
+            {% endif %}
+
+            {% if expired_subscriptions %}
+                <h4 style="margin-top: 30px;">Dịch vụ đã hết hạn ({{ expired_subscriptions.count }})</h4>
+                <div class="service-list-dashboard">
+                    {% for sub in expired_subscriptions %}
+                        <div class="service-card status-expired">
+                            <h4>{{ sub.service.name }}</h4>
+                            <p class="status-text-expired">
+                                Đã hết hạn vào: {{ sub.expiration_date|date:"d/m/Y" }}
+                            </p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+
+    {% if is_parent_user %}
+        <div class="dashboard-section">
+            <h3>Quản lý tài khoản phụ</h3>
+            <p>Bạn đang quản lý {{ child_users.count }} tài khoản phụ:</p>
+            <ul>
+                {% for child in child_users %}
+                    <li>{{ child.full_name|default:child.email }}</li>
+                {% empty %}
+                    <li>Bạn chưa thêm tài khoản phụ nào.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="dashboard-section">
+            <h3>Dịch vụ đã mua cho tài khoản phụ ({{ purchased_for_others_active.count }})</h3>
+            
+            {% if purchased_for_others_active %}
+                <div class="service-list-dashboard">
+                    {% for sub in purchased_for_others_active %}
+                        <div class="service-card 
+                            {% if not sub.is_verified %}status-pending
+                            {% elif sub in expiring_soon_subscriptions %}status-expiring
+                            {% else %}status-active{% endif %}
+                        ">
+                            <p class="user-info">Cho: <strong>{{ sub.user.full_name|default:sub.user.email }}</strong></p>
+                            <h4>
+                                <a href="{% url 'services:service_detail' sub.service.pk %}">
+                                    {{ sub.service.name }}
+                                </a>
+                            </h4>
+                            
+                            {% comment %} --- LOGIC MỚI BẮT ĐẦU TỪ ĐÂY --- {% endcomment %}
+                            {% if sub.is_verified %}
+                                {% comment %} Nếu ĐÃ XÁC MINH: Hiển thị ngày tháng {% endcomment %}
+                                {% if sub in expiring_soon_subscriptions %}
+                                    <p class="status-text-warning">
+                                        <strong>Sắp hết hạn!</strong> 
+                                        Còn <strong>{{ sub.remaining_days }} ngày</strong>
+                                    </p>
+                                {% else %}
+                                    <p class="status-text-active">
+                                        Còn <strong>{{ sub.remaining_days }} ngày</strong>
+                                    </p>
+                                {% endif %}
+                                <p class="status-text-active" style="font-size: 0.85rem;">Trạng thái: Đã xác minh</p>
+                                <p style="font-size: 0.8rem; color: #666;">Hết hạn: {{ sub.expiration_date|date:"d/m/Y" }}</p>
+
+                            {% else %}
+                                {% comment %} Nếu CHƯA XÁC MINH: Chỉ hiển thị chờ {% endcomment %}
+                                <p class="status-text-pending">Trạng thái: Chờ xác minh</p>
+                                <p style="font-size: 0.85rem; color: #555;">(Gói {{ sub.duration_days }} ngày)</p>
+                            {% endif %}
+                            {% comment %} --- KẾT THÚC LOGIC MỚI --- {% endcomment %}
+
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Bạn chưa mua dịch vụ nào cho tài khoản phụ.</p>
+            {% endif %}
+
+            {% if purchased_for_others_expired %}
+                <h4 style="margin-top: 30px;">Dịch vụ đã hết hạn ({{ purchased_for_others_expired.count }})</h4>
+                <div class="service-list-dashboard">
+                    {% for sub in purchased_for_others_expired %}
+                        <div class="service-card status-expired">
+                            <p class="user-info">Cho: <strong>{{ sub.user.full_name|default:sub.user.email }}</strong></p>
+                            <h4>{{ sub.service.name }}</h4>
+                            <p class="status-text-expired">
+                                Đã hết hạn vào: {{ sub.expiration_date|date:"d/m/Y" }}
+                            </G>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if user.is_staff %}
+         <div class="dashboard-section">
+            <h3>Chào mừng Admin</h3>
+            <p>Bạn đang đăng nhập với tư cách Quản trị viên. Hãy sử dụng các menu điều hướng ở thanh Navbar để truy cập các trang quản lý.</p>
+            <a href="{% url 'services:service_management_list' %}" class="btn btn-primary" style="padding: 10px 15px; text-decoration: none;">Quản lý Dịch vụ</a>
+            <a href="{% url 'user_management_list' %}" class="btn btn-primary" style="padding: 10px 15px; text-decoration: none; background-color: #555; margin-left: 10px;">Quản lý User</a>
+         </div>
+    {% endif %}
+
+</div> 
+{% endblock %}

@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quản lý Dịch Vụ{% endblock %}
+
+{% block content %}
+<div class="container page-container" data-aos="fade-up">
+
+  <!-- Top bar -->
+  <div class="sm-topbar">
+    <div>
+      <h2 class="sm-title">Quản lý Dịch Vụ</h2>
+      {% if page_obj %}
+        <div class="sm-sub">Tổng: {{ page_obj.paginator.count }} mục</div>
+      {% elif services %}
+        <div class="sm-sub">Tổng: {{ services|length }} mục</div>
+      {% endif %}
+    </div>
+    <a href="{% url 'services:service_management_create' %}" class="btn sm-add">+ Tạo Dịch Vụ</a>
+  </div>
+
+  <!-- Filters -->
+  <div class="sm-filters" data-aos="fade-up" data-aos-delay="80">
+    <form method="GET" action="{% url 'services:service_management_list' %}" id="multi-filter-form" class="sm-filters-grid">
+      <div class="fg">
+        <label for="q">Tìm theo tên</label>
+        <input id="q" name="q" type="text" value="{{ request.GET.q }}" placeholder="Nhập từ khóa…">
+      </div>
+
+      <div class="fg">
+        <label for="category-select">Danh mục</label>
+        <select name="category" id="category-select">
+          <option value="">Tất cả</option>
+          {% for cat in all_categories %}
+            <option value="{{ cat.id }}" {% if current_category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="fg">
+        <label for="supplier-select">Nhà cung cấp</label>
+        <select name="supplier" id="supplier-select">
+          <option value="">Tất cả</option>
+          {% for sup in all_suppliers %}
+            <option value="{{ sup.id }}" {% if current_supplier_id == sup.id %}selected{% endif %}>{{ sup.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="fg">
+        <label for="price-select">Giá</label>
+        <select name="price" id="price-select">
+          <option value="" {% if not current_price_filter %}selected{% endif %}>Tất cả</option>
+          <option value="paid" {% if current_price_filter == 'paid' %}selected{% endif %}>Có phí</option>
+          <option value="free" {% if current_price_filter == 'free' %}selected{% endif %}>Miễn phí</option>
+          <option value="contact" {% if current_price_filter == 'contact' %}selected{% endif %}>Liên hệ</option>
+        </select>
+      </div>
+
+      <div class="fg">
+        <label for="sort">Sắp xếp</label>
+        <select name="sort" id="sort">
+          <option value="">Mặc định</option>
+          <option value="name_asc"  {% if request.GET.sort == 'name_asc' %}selected{% endif %}>Tên A → Z</option>
+          <option value="name_desc" {% if request.GET.sort == 'name_desc' %}selected{% endif %}>Tên Z → A</option>
+          <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Giá tăng dần</option>
+          <option value="price_desc"{% if request.GET.sort == 'price_desc' %}selected{% endif %}>Giá giảm dần</option>
+          <option value="newest"    {% if request.GET.sort == 'newest' %}selected{% endif %}>Mới nhất</option>
+        </select>
+      </div>
+
+      <div class="fg fg-actions">
+        <button type="submit" class="btn">Lọc</button>
+        <a href="{% url 'services:service_management_list' %}" class="btn btn-clear">Xóa lọc</a>
+      </div>
+
+      {% if request.GET.q or current_category_id or current_supplier_id or current_price_filter or request.GET.sort %}
+      <div class="fg fg-chips">
+        {% if request.GET.q %}
+          <button class="chip" type="button" onclick="clearFilterAndSubmit('q')">“{{ request.GET.q }}” ×</button>
+        {% endif %}
+        {% if current_category_id %}
+          <button class="chip" type="button" onclick="clearFilterAndSubmit('category')">Danh mục ×</button>
+        {% endif %}
+        {% if current_supplier_id %}
+          <button class="chip" type="button" onclick="clearFilterAndSubmit('supplier')">Nhà cung cấp ×</button>
+        {% endif %}
+        {% if current_price_filter %}
+          <button class="chip" type="button" onclick="clearFilterAndSubmit('price')">Giá: {{ current_price_filter }} ×</button>
+        {% endif %}
+        {% if request.GET.sort %}
+          <button class="chip" type="button" onclick="clearFilterAndSubmit('sort')">Sắp xếp ×</button>
+        {% endif %}
+      </div>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Table -->
+  <div class="table-responsive" data-aos="fade-up" data-aos-delay="140">
+    <table class="table sm-table">
+      <thead>
+        <tr>
+          <th class="col-service">Dịch vụ</th>
+          <th class="col-category">Danh mục</th>
+          <th class="col-supplier">Nhà cung cấp</th>
+          <th class="col-price">Giá</th>
+          <th class="col-actions">Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for service in services %}
+        <tr>
+          <td class="col-service">
+            <div class="svc">
+              {% if service.thumbnail %}
+                <img class="svc-thumb" src="{{ service.thumbnail.url }}" alt="{{ service.name }}">
+              {% else %}
+                <div class="svc-thumb svc-thumb--na">N/A</div>
+              {% endif %}
+              <div class="svc-meta">
+                <div class="svc-name">{{ service.name }}</div>
+                <div class="svc-id">ID: {{ service.pk }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="col-category">{{ service.category.name|default:"N/A" }}</td>
+          <td class="col-supplier">{{ service.supplier.name|default:"N/A" }}</td>
+          <td class="col-price">
+            {% if service.is_price_on_contact %}
+              <span class="pill pill-info">Liên hệ</span>
+            {% elif service.price == 0 %}
+              <span class="pill pill-success">Miễn phí</span>
+            {% else %}
+              <span class="price">{{ service.price|default:"0"|floatformat:0 }} VNĐ</span>
+            {% endif %}
+          </td>
+          <td class="col-actions">
+            <a href="{% url 'services:service_management_edit' service.pk %}" class="btn btn-sm sm-btn-edit">Sửa</a>
+            <a href="{% url 'services:service_management_delete' service.pk %}" class="btn btn-sm sm-btn-del">Xóa</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center">
+            <div class="empty">
+              <h4>Chưa có dịch vụ phù hợp</h4>
+              <p>Thử đổi bộ lọc hoặc tạo mới.</p>
+              <a href="{% url 'services:service_management_create' %}" class="btn">Tạo Dịch Vụ Mới</a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  {% if page_obj %}
+    <div class="sm-pagination">
+      {% if page_obj.has_previous %}
+        <a class="btn btn-sm btn-clear" href="#" onclick="goToPage({{ page_obj.previous_page_number }});return false;">« Trước</a>
+      {% endif %}
+      <span>Trang {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a class="btn btn-sm" href="#" onclick="goToPage({{ page_obj.next_page_number }});return false;">Sau »</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+</div>
+
+<script>
+  (function () {
+    ['category-select','supplier-select','price-select','sort'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('change', function(){
+        ensureHidden(document.getElementById('multi-filter-form'), 'page', '1');
+        document.getElementById('multi-filter-form').submit();
+      });
+    });
+
+    var q = document.getElementById('q');
+    if (q) {
+      var timer;
+      q.addEventListener('input', function () {
+        clearTimeout(timer);
+        timer = setTimeout(function(){
+          ensureHidden(document.getElementById('multi-filter-form'), 'page', '1');
+          document.getElementById('multi-filter-form').submit();
+        }, 500);
+      });
+    }
+  })();
+
+  function clearFilterAndSubmit(name) {
+    var form = document.getElementById('multi-filter-form');
+    var el = form.querySelector('[name="'+name+'"]');
+    if (el) el.value = '';
+    ensureHidden(form, 'page', '1');
+    form.submit();
+  }
+  function goToPage(n) {
+    var url = new URL(window.location.href);
+    url.searchParams.set('page', n);
+    window.location.href = url.toString();
+  }
+  function ensureHidden(form, name, value) {
+    var input = form.querySelector('input[type="hidden"][name="'+name+'"]');
+    if (!input) { input = document.createElement('input'); input.type='hidden'; input.name=name; form.appendChild(input); }
+    input.value = value;
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Chi tiết Tư vấn #{{ consult.id }}{% endblock %}
+
+{% block content %}
+    <h2 data-aos="fade-down">Chi tiết Yêu cầu Tư vấn #{{ consult.id }}</h2>
+
+    <div class="profile-layout">
+        <div class="profile-main">
+            <div class="dashboard-section" data-aos="fade-up">
+                <h3>Cập nhật Yêu cầu</h3>
+                <form method="POST" class="management-form">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn">Lưu Ghi chú/Trạng thái</button>
+                    <a href="{% url 'consultation_list' %}" class="btn" style="background-color: #6c757d;">Quay lại Danh sách</a>
+                </form>
+            </div>
+        </div>
+        
+        <div class="profile-sidebar" data-aos="fade-left" data-aos-delay="100">
+            <div class="dashboard-section">
+                <h3>Thông tin Khách hàng</h3>
+                <p><strong>Tên:</strong> {{ consult.user.full_name|default:"(Chưa có)" }}</p>
+                <p><strong>Email:</strong> {{ consult.user.email|default:"(Chưa có)" }}</p>
+                <p><strong>SĐT:</strong> {{ consult.user.phone_number|default:"(Chưa có)" }}</p>
+                <p><strong>Địa chỉ:</strong> {{ consult.user.address|default:"(Chưa có)" }}</p>
+            </div>
+            <div class="dashboard-section">
+                <h3>Thông tin Yêu cầu</h3>
+                <p><strong>Dịch vụ:</strong> {{ consult.service.name }}</p>
+                <p><strong>Trạng thái:</strong> {{ consult.get_status_display }}</p>
+                <p><strong>Ngày yêu cầu:</strong> {{ consult.created_at|date:"d/m/Y H:i" }}</p>
+                <p><strong>Staff được gán:</strong> {{ consult.assigned_staff|default:"Chưa gán" }}</p>
+                {% if consult.completed_at %}
+                    <p><strong>Ngày hoàn thành:</strong> {{ consult.completed_at|date:"d/m/Y H:i" }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        .profile-layout { display: flex; gap: 30px; }
+        .profile-main { flex: 2; }
+        .profile-sidebar { flex: 1; }
+         @media (max-width: 900px) { .profile-layout { flex-direction: column; } }
+    </style>
+{% endblock %}

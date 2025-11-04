@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Xác nhận Xóa Bài Đăng{% endblock %}
+
+{% block content %}
+<div class="container page-container" data-aos="fade-up">
+
+    <h2 data-aos="fade-down">Xác nhận Xóa Bài Đăng</h2>
+    <p data-aos="fade-up">Bạn có chắc chắn muốn xóa bài đăng <strong>"{{ post.title }}"</strong> không?</p>
+    <p data-aos="fade-up" data-aos-delay="100">Hành động này không thể hoàn tác.</p>
+    
+    <form method="post" data-aos="fade-up" data-aos-delay="200">
+        {% csrf_token %}
+        <button type="submit" class="btn" style="background-color: #dc3545;">Đồng ý, Xóa</button>
+        <a href="{% url 'post_management_list' %}" class="btn" style="background-color: #6c757d;">Hủy bỏ</a>
+    </form>
+    
+</div> {% endblock %}

@@ -1,0 +1,284 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Store TIS{% endblock %}</title>
+    
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+    {% comment %} --- KHỐI THÔNG BÁO MỚI (DJANGO MESSAGES) --- {% endcomment %}
+    {% if messages %}
+        <div class="messages-container" id="django-messages-container" style="position: fixed; top: 80px; right: 20px; z-index: 9999; width: 300px; max-width: 90%;">
+            {% for message in messages %}
+                <div class="message-item 
+                    {% if message.tags == 'success' %}message-success{% endif %}
+                    {% if message.tags == 'error' %}message-error{% endif %}
+                    {% if message.tags == 'info' %}message-info{% endif %}
+                    {% if message.tags == 'warning' %}message-warning{% endif %}
+                ">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+
+        {% comment %} CSS và JS để thông báo tự động ẩn đi {% endcomment %}
+        <style>
+            .message-item {
+                padding: 15px 20px;
+                margin-bottom: 10px;
+                border-radius: 8px;
+                color: #333;
+                font-weight: 500;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                border-left-width: 5px;
+                border-left-style: solid;
+                background-color: #fff;
+                animation: slideIn 0.4s ease-out forwards;
+                opacity: 0;
+            }
+            .message-item.fade-out {
+                animation: slideOut 0.4s ease-in forwards;
+            }
+            .message-success { border-color: #28a745; background-color: #f0fff4; }
+            .message-error   { border-color: #dc3545; background-color: #fff6f6; }
+            .message-info    { border-color: #17a2b8; background-color: #f1fafd; }
+            .message-warning { border-color: #ffc107; background-color: #fffcf1; }
+
+            @keyframes slideIn {
+                from { opacity: 0; transform: translateX(100%); }
+                to   { opacity: 1; transform: translateX(0); }
+            }
+            @keyframes slideOut {
+                from { opacity: 1; transform: translateX(0); }
+                to   { opacity: 0; transform: translateX(100%); }
+            }
+        </style>
+        
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageItems = document.querySelectorAll('#django-messages-container .message-item');
+            messageItems.forEach((item, index) => {
+                // Tự động ẩn sau 4 giây (4000ms)
+                setTimeout(() => {
+                    item.classList.add('fade-out');
+                    // Xóa hẳn khỏi DOM sau khi animation kết thúc
+                    setTimeout(() => {
+                        item.remove();
+                    }, 400); // 400ms = thời gian của animation slideOut
+                }, 4000 + (index * 500)); // Các thông báo sau sẽ ẩn chậm hơn một chút
+            });
+        });
+        </script>
+    {% endif %}
+    {% comment %} --- KẾT THÚC KHỐI THÔNG BÁO --- {% endcomment %}
+    
+    <nav class="navbar" id="main-navbar">
+        <div class="navbar-container">
+            <a class="nav-logo" href="{% url 'home' %}">
+                <img src="{% static 'img/LOGO-01.png' %}" alt="TIS Logo">
+            </a>
+            
+            <div class="nav-search">
+                <input type="text" id="global-search-input" placeholder="Tìm kiếm dịch vụ, tin tức...">
+                <div class="search-results-dropdown" id="search-results">
+                    </div>
+            </div>
+
+            <div class="nav-links">
+                <a href="{% url 'services:service_list' %}">Dịch vụ</a>
+                
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}">Bảng điều khiển</a>
+                    <a href="{% url 'profile' %}">Hồ Sơ Của Tôi</a>
+
+                    {% if user.is_staff %}
+                        <div class="nav-dropdown">
+                            <a href="#" class="nav-link-admin nav-dropdown-toggle">
+                                Quản lý Admin <i class="fas fa-caret-down" style="font-size: 0.8em; margin-left: 4px;"></i>
+                            </a>
+                            <div class="nav-dropdown-content">
+                                <a href="{% url 'reports_dashboard' %}">Báo cáo</a>
+                                <a href="{% url 'orders:order_management_list' %}">Quản Lý Đơn Hàng</a>
+                                <a href="{% url 'user_management_list' %}">Quản Lý User</a>
+                                <a href="{% url 'services:service_management_list' %}">Quản Lý Dịch Vụ</a>
+                                <a href="{% url 'services:supplier_list' %}">Quản Lý Nhà Cung Cấp</a>
+                                <a href="{% url 'post_management_list' %}">Quản Lý Bài Đăng</a>
+                                <a href="{% url 'staff_management_list' %}">Quản Lý Nhân Sự</a>
+                                <a href="{% url 'consultation_list' %}">Quản Lý Tư Vấn</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {% if global_role_name %}
+                        <span class="role-badge-nav">{{ global_role_name }}</span>
+                    {% endif %}
+                    
+                    <a href="{% url 'services:view_cart' %}" class="nav-cart-link">
+                        <lottie-player 
+                            src="{% static 'lottie/shopping cart.json' %}"
+                            background="transparent" 
+                            speed="1" 
+                            style="width: 30px; height: 30px;" 
+                            loop 
+                            autoplay>
+                        </lottie-player>
+                        
+                        {% comment %} <span>Giỏ Hàng</span> {% endcomment %}
+                    </a>
+                
+                {% else %}
+                    <a href="{% url 'login' %}">Đăng nhập</a>
+                    <a href="{% url 'register' %}" class="btn btn-nav-cart">Đăng ký</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+
+    <footer class="main-footer">
+        <div class="container"> 
+            <div class="footer-content">
+                <div class="footer-column footer-company-info" data-aos="fade-up" data-aos-delay="100">
+                    <img src="{% static 'img/LOGO-01.png' %}" alt="TIS Logo" class="footer-logo">
+                    <h4 class="footer-company-name">TIS VIETNAM INSURANCE BROKER</h4>
+                    <p>
+                        <strong>Address:</strong> Suite 1101, 11th Floor, The Grace Tower, 71 Hoang Van Thai, Tan My Ward, Ho Chi Minh City, Vietnam
+                    </p>
+                    <p>
+                        <strong>Email:</strong> communication@tisbroker.com
+                    </p>
+                    <p>
+                        <strong>Tel:</strong> +84 28 54 171 181
+                    </p>
+                </div>
+
+                <div class="footer-column" data-aos="fade-up" data-aos-delay="200">
+                    <h4>Liên kết nhanh</h4>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Trang chủ</a></li>
+                        <li><a href="{% url 'services:service_list' %}">Dịch vụ</a></li>
+                        <li><a href="{% url 'profile' %}">Hồ sơ</a></li>
+                        <li><a href="{% url 'services:view_cart' %}">Giỏ hàng</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column" data-aos="fade-up" data-aos-delay="300">
+                    <h4>Danh Mục Dịch Vụ</h4>
+                    <ul>
+                        {% for cat in footer_categories %}
+                            <li><a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>
+                        {% empty %}
+                            <li>Chưa có danh mục.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                {% if user.is_staff %}
+                <div class="footer-column" data-aos="fade-up" data-aos-delay="400">
+                    <h4>Quản lý (Admin)</h4>
+                    <ul>
+                        <li><a href="{% url 'services:service_management_list' %}">Quản lý Dịch Vụ</a></li>
+                        <li><a href="{% url 'services:supplier_list' %}">Quản lý Nhà Cung Cấp</a></li>
+                        <li><a href="{% url 'orders:order_management_list' %}">Quản lý Đơn Hàng</a></li>
+                        <li><a href="{% url 'post_management_list' %}">Quản lý Bài Đăng</a></li>
+                        <li><a href="{% url 'user_management_list' %}">Quản lý User</a></li>
+                        <li><a href="{% url 'consultation_list' %}">Quản lý Tư Vấn</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Store TIS. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="consult-modal" class="modal">
+        </div>
+    
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+      AOS.init({ duration: 800, once: true, easing: 'ease-in-out' });
+
+      // --- JAVASCRIPT CHO NAVBAR SCROLL ---
+      const navbar = document.getElementById('main-navbar');
+      if(navbar) {
+          if (document.body.classList.contains('home-page')) {
+              window.onscroll = function() {
+                  if (window.scrollY > 50) { navbar.classList.add('scrolled'); } 
+                  else { navbar.classList.remove('scrolled'); }
+              };
+          } else {
+              navbar.classList.add('scrolled');
+          }
+      }
+
+      // --- JAVASCRIPT CHO MODAL TƯ VẤN ---
+      document.addEventListener('DOMContentLoaded', function() {
+          const consultModal = document.getElementById('consult-modal');
+          // ... (Toàn bộ code JS cho modal tư vấn giữ nguyên) ...
+      });
+    </script>
+    {% block extra_js %}
+    <script>
+    // --- JAVASCRIPT MỚI CHO TÌM KIẾM ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('global-search-input');
+        const resultsDropdown = document.getElementById('search-results');
+        let searchTimeout;
+
+        if (searchInput && resultsDropdown) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value;
+                if (query.length < 2) {
+                    resultsDropdown.style.display = 'none';
+                    return;
+                }
+                searchTimeout = setTimeout(() => {
+                    fetch(`{% url 'ajax_search' %}?q=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.html) {
+                                resultsDropdown.innerHTML = data.html;
+                                resultsDropdown.style.display = 'block';
+                            } else {
+                                resultsDropdown.style.display = 'none';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Lỗi tìm kiếm:', error);
+                            resultsDropdown.style.display = 'none';
+                        });
+                }, 300);
+            });
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !resultsDropdown.contains(e.target)) {
+                    resultsDropdown.style.display = 'none';
+                }
+            });
+             searchInput.addEventListener('focus', function() {
+                if (resultsDropdown.innerHTML.trim() !== "") {
+                    resultsDropdown.style.display = 'block';
+                }
+            });
+        }
+    });
+    </script>
+    {% endblock extra_js %}
+</body>
+</html>

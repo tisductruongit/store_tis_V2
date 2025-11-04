@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hồ Sơ Của Tôi{% endblock %}
+
+{% block content %}
+<div class="container page-container" data-aos="fade-up">
+    
+    <h2 data-aos="fade-down">Hồ Sơ Của Tôi</h2>
+
+    <div class="profile-layout">
+        
+        <div class="profile-main">
+            <div class="dashboard-section" data-aos="fade-up">
+                <h3>Thông tin Tài khoản</h3>
+                <p><strong>Định danh chính:</strong> {{ user.email|default:user.phone_number|default:user.cccd }}</p>
+                <p><strong>Vai trò:</strong> {{ global_role_name|default:"User" }}</p>
+                {% if user.parent %}
+                    <p><strong>Được quản lý bởi:</strong> {{ user.parent.full_name|default:user.parent.email }}</p>
+                {% endif %}
+                <p><strong>Ngày tham gia:</strong> {{ user.date_joined|date:"d/m/Y" }}</p>
+            </div>
+
+            <div class="dashboard-section" data-aos="fade-up" data-aos-delay="100">
+                <h3>Cập nhật Thông tin Cá nhân & Mua hàng</h3>
+                <p>Các trường đánh dấu (*) là bắt buộc để có thể mua dịch vụ.</p>
+                
+                <form method="POST" enctype="multipart/form-data" class="management-form">
+                    {% csrf_token %}
+                    {{ profile_form.non_field_errors }}
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ profile_form.full_name.label_tag }}
+                            {{ profile_form.full_name }}
+                            {{ profile_form.full_name.errors }}
+                        </div>
+                        <div class="form-group">
+                            {{ profile_form.date_of_birth.label_tag }}
+                            {{ profile_form.date_of_birth }}
+                            {{ profile_form.date_of_birth.errors }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ profile_form.phone_number.id_for_label }}">{{ profile_form.phone_number.label }} (*)</label>
+                            {{ profile_form.phone_number }}
+                            {{ profile_form.phone_number.errors }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ profile_form.email.id_for_label }}">{{ profile_form.email.label }} (*)</label>
+                            {{ profile_form.email }}
+                            {{ profile_form.email.errors }}
+                        </div>
+                    </div>
+                    <p>
+                        <label for="{{ profile_form.address.id_for_label }}">{{ profile_form.address.label }} (*)</label>
+                        {{ profile_form.address }}
+                        {{ profile_form.address.errors }}
+                    </p>
+
+                    <div class="form-row">
+                         <div class="form-group">
+                            </div>
+                         <div class="form-group">
+                            <label for="{{ profile_form.face_id_image.id_for_label }}">{{ profile_form.face_id_image.label }} (*)</label>
+                             {% if user.face_id_image %}
+                                <p class="current-image" style="margin-top: 0;">Ảnh hiện tại: <a href="{{ user.face_id_image.url }}" target="_blank">Xem ảnh</a></p>
+                            {% endif %}
+                            {{ profile_form.face_id_image }}
+                            {{ profile_form.face_id_image.errors }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">Lưu thay đổi</button>
+                </form>
+            </div>
+
+            <div class="dashboard-section" data-aos="fade-up" data-aos-delay="200">
+                <h3>Bảo mật & Tài khoản</h3>
+                <p>Quản lý mật khẩu và đăng xuất khỏi tài khoản của bạn.</p>
+                <a href="{% url 'password_change' %}" class="btn" style="background-color: var(--dark-grey); margin-right: 10px; margin-bottom: 10px;">Đổi Mật khẩu</a>
+                <a href="{% url 'logout' %}" class="btn" style="background-color: var(--primary-red); margin-bottom: 10px;">Đăng xuất</a>
+            </div>
+        </div>
+
+        <div class="profile-sidebar" data-aos="fade-left" data-aos-delay="100">
+             <div class="dashboard-section">
+                <h3>Ảnh CCCD Đã Tải Lên</h3>
+                {% if user.id_card_image %}
+                    <img src="{{ user.id_card_image.url }}" alt="Ảnh CCCD" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd;">
+                {% else %}
+                    <p>Bạn chưa tải ảnh CCCD.</p>
+                {% endif %}
+            </div>
+             <div class="dashboard-section">
+                <h3>Ảnh Face ID Đã Tải Lên</h3>
+                {% if user.face_id_image %}
+                    <img src="{{ user.face_id_image.url }}" alt="Ảnh Face ID" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd;">
+                {% else %}
+                    <p>Bạn chưa tải ảnh Face ID.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <style>
+        .profile-layout { display: flex; gap: 30px; }
+        .profile-main { flex: 2; }
+        .profile-sidebar { flex: 1; }
+         @media (max-width: 900px) { .profile-layout { flex-direction: column; } }
+    </style>
+</div>
+{% endblock %}
